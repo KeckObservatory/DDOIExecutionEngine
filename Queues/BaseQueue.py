@@ -7,7 +7,6 @@ import Queues.QueueItem as QueueItem
 
 class DDOIBaseQueue():
 
-
     def __init__(self, item_type, name = None) -> None:
         ## Initialize Back-End Properties
         self.pid = os.getpgid()
@@ -27,7 +26,7 @@ class DDOIBaseQueue():
         # List to store all items that have been pulled from the queue
         self.boneyard = list()
 
-        
+
     def __len__(self) -> int:
         """Gets the length of the queue
 
