@@ -1,27 +1,5 @@
-from asyncio import QueueEmpty
-import QueueItem
-import BaseQueue
-
-class ObservingBlockItem(QueueItem):
-
-    def __init__(self, ob_dict) -> None:
-        self.ob = ob_dict
-        self._parse_ob()
-
-    def _parse_ob(self) -> None:
-        """Init helper function
-        """
-        self.metadata = self.ob.get('metadata', None)
-        self.acquisition = self.ob.get('acquisition', None)
-        self.sequences = self.ob.get('sequences', None)
-        self.target = self.ob.get('target', None)
-        self.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
-
-class SequenceItem(QueueItem):
-    pass
-
-class EventItem(QueueItem):
-    pass
+import Queues.BaseQueue as BaseQueue
+from Queues import ObservingBlockItem, SequenceItem, EventItem
 
 # Create the three queues:
 observing_queue = BaseQueue(ObservingBlockItem)
@@ -45,9 +23,6 @@ def OB_to_sequence(OB) -> list:
     list
         Python list of sequences
     """
-    # First, load the acquisition as the first sequence
-    # Then, load each sequence into the list
-    # Finally, return that list
 
     output = []
     for seq in OB.sequences:
