@@ -26,6 +26,8 @@ def main():
         print('event_queue_to_xcute recieved', data)
         newEventQueue = data.get('event_queue')
         event_queue.set_queue(newEventQueue)
+        print('\nevent_queue.get_queue_as_json()\n')
+        print(event_queue.get_queue_as_json())
 
     @sio.event
     def ob_to_xcute(data):
