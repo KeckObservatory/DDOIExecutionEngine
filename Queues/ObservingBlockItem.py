@@ -1,15 +1,24 @@
+import json
 import QueueItem
 
 class ObservingBlockItem(QueueItem):
 
-    def __init__(self, ob_dict) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.ob = ob_dict
-        self._parse_ob()
+        self.metadata = None
+        self.acquisition = None
+        self.sequences = None
+        self.target = None
+        self.COMPONENTS = None
+        
+    @classmethod
+    def from_JSON(filename):
+        ob = json.load(json)
+        ret = ObservingBlockItem()
+        ret.metadata = ob.get('metadata', None)
+        ret.acquisition = ob.get('acquisition', None)
+        ret.sequences = ob.get('observations', None)
+        ret.target = ob.get('target', None)
+        ret.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
 
-    def _parse_ob(self) -> None:
-        self.metadata = self.ob.get('metadata', None)
-        self.acquisition = self.ob.get('acquisition', None)
-        self.sequences = self.ob.get('observations', None)
-        self.target = self.ob.get('target', None)
-        self.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
+        return ret
