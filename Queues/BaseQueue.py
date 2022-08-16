@@ -3,7 +3,7 @@ import os
 import queue
 import json
 
-import Queues.QueueItem as QueueItem
+from Queues.QueueItem import QueueItem
 
 class DDOIBaseQueue():
 

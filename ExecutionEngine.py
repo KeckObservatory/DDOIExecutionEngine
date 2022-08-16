@@ -1,5 +1,7 @@
 from Queues.BaseQueue import DDOIBaseQueue
-from Queues import ObservingBlockItem, SequenceItem, EventItem
+from Queues.ObservingBlockItem import ObservingBlockItem
+from Queues.SequenceItem import SequenceItem
+from Queues.EventItem import EventItem
 
 # Create the three queues:
 observing_queue = DDOIBaseQueue(ObservingBlockItem)
