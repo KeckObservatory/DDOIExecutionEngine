@@ -9,7 +9,7 @@ class DDOIBaseQueue():
 
     def __init__(self, item_type, name = None) -> None:
         ## Initialize Back-End Properties
-        self.pid = os.getpgid()
+        self.pid = os.getpid()
         self.name = name if name else str(self.pid)
 
         if issubclass(item_type, QueueItem):
