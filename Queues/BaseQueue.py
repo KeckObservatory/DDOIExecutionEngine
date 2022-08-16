@@ -50,6 +50,8 @@ class DDOIBaseQueue():
         ## Set up actual queue
         self.queue = queue.Queue()
 
+        # List to store all items that have been pulled from the queue
+        self.boneyard = list()
     def __len__(self) -> int:
         """Gets the length of the queue
 
@@ -99,14 +101,16 @@ class DDOIBaseQueue():
 
 
     def get(self) -> QueueItem:
-        """Pulls the first item from the queue and returns it
+        """Gets and removes the first item from the queue and returns it.
 
         Returns
         -------
         QueueItem
             first item in the queue
         """
-        return self.queue.get()
+        item = self.queue.get()
+        self.boneyard.append(item)
+        return item
 
     def set_queue(self, new_contents) -> int:
         """Irreversibly empties the queue and refills it with the contents of

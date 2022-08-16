@@ -1,4 +1,6 @@
 import QueueItem
 
 class EventItem(QueueItem):
-    pass
+    
+    def __init__(self) -> None:
+        super().__init__()

@@ -23,9 +23,6 @@ def OB_to_sequence(OB) -> list:
     list
         Python list of sequences
     """
-    # First, load the acquisition as the first sequence
-    # Then, load each sequence into the list
-    # Finally, return that list
 
     output = []
     for seq in OB.sequences:
