@@ -1,10 +1,10 @@
-from Queues.BaseQueue import BaseQueue
+from Queues.BaseQueue import DDOIBaseQueue
 from Queues import ObservingBlockItem, SequenceItem, EventItem
 
 # Create the three queues:
-observing_queue = BaseQueue(ObservingBlockItem)
-sequence_queue = BaseQueue(SequenceItem)
-event_queue = BaseQueue(EventItem)
+observing_queue = DDOIBaseQueue(ObservingBlockItem)
+sequence_queue = DDOIBaseQueue(SequenceItem)
+event_queue = DDOIBaseQueue(EventItem)
 
 def OB_to_sequence() -> None:
     OB = observing_queue.get()
