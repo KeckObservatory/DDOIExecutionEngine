@@ -35,13 +35,15 @@ class DDOIBaseQueue():
     #         """
     #         return "data"
 
-    def __init__(self, name = None) -> None:
+    def __init__(self, item_type, name = None) -> None:
         ## Initialize Back-End Properties
         self.pid = os.getpgid()
         self.name = name if name else str(self.pid)
 
-        # # Set up the multiprocess (or socket) listener here
-        # self.connection = self.ExternalInterface(QM_IP, QM_PORT)
+        if issubclass(item_type, QueueItem):
+            self.item_type = item_type
+        else:
+            raise TypeError("item_type must be a subclass of QueueItem")
 
         ## Set up logger
         self.logger = logging.getLogger(self.name)
@@ -72,10 +74,10 @@ class DDOIBaseQueue():
         TypeError
             Raised if element is not a QueueItem
         """
-        if isinstance(element, QueueItem):
+        if isinstance(element, self.item_type):
             self.queue.put(element)
         else:
-            raise TypeError(f"Expected a QueueItem but got {type(element)}")
+            raise TypeError(f"Expected {self.item_type} but got {type(element)}")
 
     def put_many(self, elements) -> None:
         """Insert more than one QueueItem into the queue
@@ -91,8 +93,8 @@ class DDOIBaseQueue():
             Raised if any of the input elements are not QueueItem's
         """
         for i in elements:
-            if not isinstance(i, QueueItem):
-                raise TypeError(f"Expected a QueueItem but got {type(i)}")
+            if not isinstance(i, self.item_type):
+                raise TypeError(f"Expected {self.item_type} but got {type(i)}")
         for i in elements:
             self.queue.put(i)
 
@@ -141,8 +143,8 @@ class DDOIBaseQueue():
         
         # Check that all inputs are QueueItems
         for i in new_contents:
-            if not isinstance(i, QueueItem):
-                raise TypeError(f"Expected QueueItem, but got {type(i)}")
+            if not isinstance(i, self.item_type):
+                raise TypeError(f"Expected {self.item_type}, but got {type(i)}")
         
         # Save the original length
         original_len = len(self)
