@@ -12,7 +12,7 @@ event_queue = BaseQueue()
 
 def OB_to_sequence() -> None:
     OB = observing_queue.get()
-    sequence_queue.put(OB_to_sequence(OB))
+    sequence_queue.put_many(OB_to_sequence(OB))
 
 def OB_to_sequence(OB) -> list:
     """Takes an OB item from a queue and converts it to a list of sequences

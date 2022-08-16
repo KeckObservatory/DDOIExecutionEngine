@@ -152,7 +152,7 @@ class DDOIBaseQueue():
 
         # Add the new contents
         for i in new_contents:
-            self.put(i)
+            self.queue.put(i)
         
         return original_len - len(self)
         
