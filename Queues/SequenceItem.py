@@ -1,4 +1,4 @@
-import QueueItem
+from QueueItem import QueueItem
 
 class SequenceItem(QueueItem):
     

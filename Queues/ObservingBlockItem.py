@@ -1,5 +1,5 @@
 import json
-import QueueItem
+from QueueItem import QueueItem
 
 class ObservingBlockItem(QueueItem):
 
@@ -10,7 +10,7 @@ class ObservingBlockItem(QueueItem):
         self.sequences = None
         self.target = None
         self.COMPONENTS = None
-        
+
     @classmethod
     def from_JSON(filename):
         ob = json.load(json)
