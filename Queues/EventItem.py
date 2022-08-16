@@ -1,4 +1,4 @@
-from QueueItem import QueueItem
+from .QueueItem import QueueItem
 
 class EventItem(QueueItem):
     

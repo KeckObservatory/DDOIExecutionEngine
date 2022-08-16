@@ -1,5 +1,5 @@
 import json
-from QueueItem import QueueItem
+from .QueueItem import QueueItem
 
 class ObservingBlockItem(QueueItem):
 
