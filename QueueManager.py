@@ -1,11 +1,8 @@
-from lib2to3.pytree import Base
-import socket
-import selectors
-import sys
-import types
+from asyncio import QueueEmpty
+import QueueItem
 import BaseQueue
 
-class ObservingBlock():
+class ObservingBlockItem(QueueItem):
 
     def __init__(self, ob_dict) -> None:
         self.ob = ob_dict
@@ -20,10 +17,16 @@ class ObservingBlock():
         self.target = self.ob.get('target', None)
         self.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
 
+class SequenceItem(QueueItem):
+    pass
+
+class EventItem(QueueItem):
+    pass
+
 # Create the three queues:
-observing_queue = BaseQueue()
-sequence_queue = BaseQueue()
-event_queue = BaseQueue()
+observing_queue = BaseQueue(ObservingBlockItem)
+sequence_queue = BaseQueue(SequenceItem)
+event_queue = BaseQueue(EventItem)
 
 def OB_to_sequence() -> None:
     OB = observing_queue.get()
