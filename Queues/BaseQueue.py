@@ -7,32 +7,6 @@ import Queues.QueueItem as QueueItem
 
 class DDOIBaseQueue():
 
-    # class ExternalInterface():
-
-    #     def __init__(self, QM_IP, QM_PORT) -> None:
-    #         self.server_ip = QM_IP
-    #         self.server_port = QM_PORT
-        
-
-    #     def send_data(data) -> None:
-    #         """Sends arbitrary string data over the connection
-
-    #         Parameters
-    #         ----------
-    #         data : str
-    #             Data to be sent over the connection
-    #         """
-    #         pass
-
-    #     def read_data() -> str:
-    #         """Reads data from the connection
-
-    #         Returns
-    #         -------
-    #         str
-    #             Data read over the connection
-    #         """
-    #         return "data"
 
     def __init__(self, item_type, name = None) -> None:
         ## Initialize Back-End Properties
@@ -52,6 +26,8 @@ class DDOIBaseQueue():
 
         # List to store all items that have been pulled from the queue
         self.boneyard = list()
+
+        
     def __len__(self) -> int:
         """Gets the length of the queue
 
@@ -174,7 +150,3 @@ class DDOIBaseQueue():
         l = [str(i) for i in list(self.queue)]
         return json.dumps(l)
 
-    # def send_queue(self) -> None:
-    #     """Sends a JSONified version of the queue over the ExternalInterface
-    #     """
-    #     self.connection.send_data(self._encode_queue_as_json())
