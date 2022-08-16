@@ -5,6 +5,21 @@ import sys
 import types
 import BaseQueue
 
+class ObservingBlock():
+
+    def __init__(self, ob_dict) -> None:
+        self.ob = ob_dict
+        self._parse_ob()
+
+    def _parse_ob(self) -> None:
+        """Init helper function
+        """
+        self.metadata = self.ob.get('metadata', None)
+        self.acquisition = self.ob.get('acquisition', None)
+        self.sequences = self.ob.get('sequences', None)
+        self.target = self.ob.get('target', None)
+        self.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
+
 # Create the three queues:
 observing_queue = BaseQueue()
 sequence_queue = BaseQueue()
@@ -27,6 +42,9 @@ def OB_to_sequence(OB) -> list:
     list
         Python list of sequences
     """
+    # First, load the acquisition as the first sequence
+    # Then, load each sequence into the list
+    # Finally, return that list
     return []
 
 def sequence_to_events(sequence, script) -> list:
