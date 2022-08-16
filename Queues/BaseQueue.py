@@ -1,4 +1,3 @@
-from asyncio import QueueEmpty
 import logging
 import os
 import queue

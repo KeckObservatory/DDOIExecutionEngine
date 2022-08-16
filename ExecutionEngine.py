@@ -1,5 +1,3 @@
-from asyncio import QueueEmpty
-import Queues.QueueItem as QueueItem
 import Queues.BaseQueue as BaseQueue
 from Queues import ObservingBlockItem, SequenceItem, EventItem
 
