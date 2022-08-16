@@ -1,4 +1,4 @@
-import Queues.BaseQueue as BaseQueue
+from Queues.BaseQueue import BaseQueue
 from Queues import ObservingBlockItem, SequenceItem, EventItem
 
 # Create the three queues:
