@@ -48,7 +48,11 @@ def OB_to_sequence(OB) -> list:
     # First, load the acquisition as the first sequence
     # Then, load each sequence into the list
     # Finally, return that list
-    return []
+
+    output = []
+    for seq in OB.sequences:
+        output.append(SequenceItem.from_sequence(seq))
+    return output
 
 def sequence_to_events(sequence, script) -> list:
     """Takes a sequence and breaks it down into executable events for the 
