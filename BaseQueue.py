@@ -59,7 +59,7 @@ class DDOIBaseQueue():
         """
         return len(self.queue)
 
-    def put(self, element) -> None:
+    def put_one(self, element) -> None:
         """Adds a QueueItem element to the queue
 
         Parameters
@@ -76,6 +76,26 @@ class DDOIBaseQueue():
             self.queue.put(element)
         else:
             raise TypeError(f"Expected a QueueItem but got {type(element)}")
+
+    def put_many(self, elements) -> None:
+        """Insert more than one QueueItem into the queue
+
+        Parameters
+        ----------
+        elements : list
+            Python list of QueueItems
+
+        Raises
+        ------
+        TypeError
+            Raised if any of the input elements are not QueueItem's
+        """
+        for i in elements:
+            if not isinstance(i, QueueItem):
+                raise TypeError(f"Expected a QueueItem but got {type(i)}")
+        for i in elements:
+            self.queue.put(i)
+
 
     def get(self) -> QueueItem:
         """Pulls the first item from the queue and returns it
