@@ -1,6 +1,6 @@
 import logging
 import os
-import queue
+from collections import deque
 import json
 
 from Queues.QueueItem import QueueItem
@@ -21,7 +21,7 @@ class DDOIBaseQueue():
         self.logger = logging.getLogger(self.name)
 
         ## Set up actual queue
-        self.queue = queue.Queue()
+        self.queue = deque()
 
         # List to store all items that have been pulled from the queue
         self.boneyard = list()
@@ -35,7 +35,7 @@ class DDOIBaseQueue():
         int
             Length of the queue
         """
-        return self.queue.qsize()
+        return len(self.queue)
 
     def put_one(self, element) -> None:
         """Adds a QueueItem element to the queue
@@ -51,7 +51,7 @@ class DDOIBaseQueue():
             Raised if element is not a QueueItem
         """
         if isinstance(element, self.item_type):
-            self.queue.put(element)
+            self.queue.append(element)
         else:
             raise TypeError(f"Expected {self.item_type} but got {type(element)}")
 
@@ -72,7 +72,7 @@ class DDOIBaseQueue():
             if not isinstance(i, self.item_type):
                 raise TypeError(f"Expected {self.item_type} but got {type(i)}")
         for i in elements:
-            self.queue.put(i)
+            self.queue.append(i)
 
 
     def get(self) -> QueueItem:
@@ -83,7 +83,7 @@ class DDOIBaseQueue():
         QueueItem
             first item in the queue
         """
-        item = self.queue.get()
+        item = self.queue.popleft()
         self.boneyard.append(item)
         return item
 
@@ -132,7 +132,7 @@ class DDOIBaseQueue():
 
         # Add the new contents
         for i in new_contents:
-            self.queue.put(i)
+            self.queue.append(i)
         
         return original_len - len(self)
         
