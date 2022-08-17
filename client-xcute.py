@@ -16,6 +16,8 @@ def main():
     sequence_queue = DDOIBaseQueue(SequenceItem)
     event_queue = DDOIBaseQueue(EventItem)
 
+    #sio = socketio.Client(logger=True, engineio_logger=True)
+    sio = socketio.Client()
     @sio.event
     def connect():
         print('connection established')
@@ -51,8 +53,6 @@ def main():
     def disconnect():
         print('disconnected from server')
 
-    #sio = socketio.Client(logger=True, engineio_logger=True)
-    sio = socketio.Client()
     sio.connect(url)
     sio.wait()
 
