@@ -12,7 +12,7 @@ class ObservingBlockItem(QueueItem):
         self.COMPONENTS = None
 
     @classmethod
-    def from_JSON(filename):
+    def from_JSON(cls, filename):
         ob = json.load(json)
         ret = ObservingBlockItem()
         ret.metadata = ob.get('metadata', None)

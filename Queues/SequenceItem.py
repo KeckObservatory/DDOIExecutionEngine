@@ -8,7 +8,7 @@ class SequenceItem(QueueItem):
         self.parameters = None
 
     @classmethod
-    def from_sequence(sequence):
+    def from_sequence(cls, sequence):
         ret = SequenceItem()
         ret.metadata = sequence['metadata']
         ret.parameters = sequence['parameters']
