@@ -35,7 +35,7 @@ class DDOIBaseQueue():
         int
             Length of the queue
         """
-        return len(self.queue)
+        return self.queue.qsize()
 
     def put_one(self, element) -> None:
         """Adds a QueueItem element to the queue
