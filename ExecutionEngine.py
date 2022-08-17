@@ -1,3 +1,4 @@
+from multiprocessing import Process
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingBlockItem import ObservingBlockItem
 from Queues.SequenceItem import SequenceItem
@@ -33,7 +34,14 @@ def OB_to_sequence(OB) -> list:
 
 def sequence_to_events(sequence, script) -> list:
     """Takes a sequence and breaks it down into executable events for the 
-    event queue
+    event queue. This requires:
+        - Parsing the script
+        - Determining which Translator Modules are needed
+        - Generating a process object that has access to:
+            - all needed arguements
+            - the needed Translator Module/Modules
+            - some way to communicate its status back to this ExEn
+        
 
     Parameters
     ----------
@@ -48,3 +56,19 @@ def sequence_to_events(sequence, script) -> list:
         Python list of events
     """
     return []
+
+def event_dispatcher(event_item) -> Process:
+    """Takes an event item and dispatches it to a process
+
+    Parameters
+    ----------
+    event_item : EventItem
+        EventItem that should be run
+
+    Returns
+    -------
+    Process
+        multiprocessing Process that is running the event
+    """
+
+    
