@@ -1,5 +1,5 @@
 import socketio
-from ExecutionEngine import *
+from ExecutionEngine import observing_queue, sequence_queue, event_queue
 
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingBlockItem import ObservingBlockItem
@@ -12,10 +12,6 @@ def main():
     port = '50007'
     url = 'http://' + host + ':' + port
 
-    observing_queue = DDOIBaseQueue(ObservingBlockItem)
-    sequence_queue = DDOIBaseQueue(SequenceItem)
-    event_queue = DDOIBaseQueue(EventItem)
-
     #sio = socketio.Client(logger=True, engineio_logger=True)
     sio = socketio.Client()
     @sio.event
@@ -25,7 +21,7 @@ def main():
     @sio.event
     def sequence_queue_to_xcute(data):
         print('sequence_queue_to_xcute recieved', data)
-        seqDict= data.get('sequence_queue')
+        seqDict = data.get('sequence_queue')
         newSequenceQueue = [ SequenceItem.from_sequence(x) for x in seqDict ]
         sequence_queue.set_queue(newSequenceQueue)
 
