@@ -1,11 +1,14 @@
 import multiprocessing
+import importlib
 
 class EventExecutor:
 
-    def __init__(self, args, execute = True) -> None:
+    def __init__(self, connection, args, execute = True) -> None:
         self.args = args
 
         self.TMF = self.import_translator_module_function(args.translator_module_name)
+
+        self.pipe = connection
 
         # TODO: Send messages at each of these steps
         # TODO: figure out the logger
@@ -32,10 +35,11 @@ class EventExecutor:
         ModuleNotFoundError
             Raised if the module cannot be found
         """
-        if 4 == 4:
-            raise ModuleNotFoundError
-        # Try to import the module given by the name
-        pass
+        try:
+            importlib.import_module(name)
+        except ModuleNotFoundError as e:
+            print(f"Failed to import {name}")
+        
 
     def execute_translator_module_function(self, function) -> bool:
         """Executes the given function with the arguments passed into this class
@@ -50,4 +54,7 @@ class EventExecutor:
         bool
             True if the execution was successful, False otherwise
         """
+        pass
+
+    def run(self) -> None:
         pass
