@@ -13,7 +13,7 @@ class ObservingBlockItem(QueueItem):
 
     @classmethod
     def from_JSON(cls, filename):
-        ob = json.load(json)
+        ob = json.loads(json)
         ret = ObservingBlockItem()
         ret.metadata = ob.get('metadata', None)
         ret.acquisition = ob.get('acquisition', None)

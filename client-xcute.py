@@ -1,6 +1,6 @@
 import socketio
 from ExecutionEngine import ExecutionEngine 
-
+import pdb
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingBlockItem import ObservingBlockItem
 from Queues.SequenceItem import SequenceItem
@@ -40,8 +40,9 @@ def main():
     def ob_to_xcute(data):
         print('ob_to_excute recieved', data)
         newOB = data.get("ob")
-        obItem = ObservingBlockItem.from_JSON(newOB)
-        ee.obs_q.seq_queue(obItem)
+        if bool(newOB):
+       	    obItem = ObservingBlockItem.from_JSON(newOB)
+            ee.obs_q.seq_queue(obItem)
 
     @sio.event
     def task_to_xcute(data):
