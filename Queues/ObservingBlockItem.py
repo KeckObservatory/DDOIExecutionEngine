@@ -1,4 +1,5 @@
 import json
+import pdb
 from .QueueItem import QueueItem
 
 class ObservingBlockItem(QueueItem):
@@ -11,14 +12,24 @@ class ObservingBlockItem(QueueItem):
         self.target = None
         self.COMPONENTS = None
 
-    @classmethod
-    def from_JSON(cls, filename):
-        ob = json.load(filename)
+    @staticmethod
+    def create_observing_block_item(ob):
         ret = ObservingBlockItem()
         ret.metadata = ob.get('metadata', None)
         ret.acquisition = ob.get('acquisition', None)
         ret.sequences = ob.get('observations', None)
         ret.target = ob.get('target', None)
         ret.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
+        return ret
 
+    @classmethod
+    def from_DICT(cls, ob):
+        ret = cls.create_observing_block_item(ob)
+        return ret
+       
+
+    @classmethod
+    def from_JSON(cls, filename):
+        ob = json.load(filename)
+        ret = cls.create_observing_block_item(ob)
         return ret

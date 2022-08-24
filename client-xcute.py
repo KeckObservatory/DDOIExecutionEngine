@@ -38,11 +38,10 @@ def main():
 
     @sio.event
     def ob_to_xcute(data):
-        print('ob_to_excute recieved', data)
         newOB = data.get("ob")
         if bool(newOB):
-       	    obItem = ObservingBlockItem.from_JSON(newOB)
-            ee.obs_q.seq_queue(obItem)
+       	    obItem = ObservingBlockItem.from_DICT(newOB)
+            ee.obs_q.set_queue([obItem])
 
     @sio.event
     def task_to_xcute(data):
