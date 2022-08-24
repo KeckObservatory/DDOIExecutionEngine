@@ -1,5 +1,6 @@
 import multiprocessing
 import importlib
+from typing import Callable
 
 class EventExecutor:
 
@@ -17,7 +18,7 @@ class EventExecutor:
             res = self.TMF(args.translator_arguments)
             
 
-    def import_translator_module_function(self, name) -> function:
+    def import_translator_module_function(self, name) -> Callable:
         """Attempts to import the specified Translator Module function and return it
 
         Parameters
