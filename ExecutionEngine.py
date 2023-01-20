@@ -21,9 +21,9 @@ from typing import Tuple, List
 
 from EventExecutor import EventExecutor
 from Queues.BaseQueue import DDOIBaseQueue
-from Queues.ObservingBlockItem import ObservingBlockItem
-from Queues.SequenceItem import SequenceItem
-from Queues.EventItem import EventItem
+from Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
+from Queues.SequenceQueue.SequenceItem import SequenceItem
+from Queues.EventQueue.EventItem import EventItem
 
 class ExecutionEngine:
     """Class representing an instance of the Execution Engine

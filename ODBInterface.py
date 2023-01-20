@@ -7,6 +7,7 @@ class OBDInterface:
 
         self.cfg = configparser.ConfigParser()
         self.cfg.read(cfg_file)
+        self.api_url = self.cfg['URLS']["api_url"]
         self.session = self.get_authenticated_session()
 
     def get_authenticated_session(self) -> requests.Session:
@@ -30,7 +31,7 @@ class OBDInterface:
         return session
 
     def get_semids(self):
-        url = f"{self.url}/observers/semesterIDs"
+        url = f"{self.api_url}/observers/semesterIDs"
         res = self.session.get(url)
         if res.status_code == 200:
             data = res.json()
@@ -38,9 +39,8 @@ class OBDInterface:
         else:
             print("What should I do here?")
 
-
     def get_OBs_from_semIDs(self, semIDs):
-        url = f"{self.url}/search/ob"
+        url = f"{self.api_url}/search/ob"
         for semID in semIDs:
             res = self.session.get(url, params = {
                 "sem_id" : semID
