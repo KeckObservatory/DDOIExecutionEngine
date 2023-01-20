@@ -7,7 +7,7 @@ from Queues.QueueItem import QueueItem
 
 class DDOIBaseQueue():
 
-    def __init__(self, item_type, name = None) -> None:
+    def __init__(self, item_type, logger=None, name=None) -> None:
         ## Initialize Back-End Properties
         self.pid = os.getpid()
         self.name = name if name else str(self.pid)
