@@ -1,0 +1,79 @@
+{
+    "keywords" : [
+        { "acquire_target" : {
+            "flags_on_start" : [
+                {"acquiring" : "True"}
+            ],
+            "flags_on_end" : [
+                {"acquiring" : "False"}
+            ],
+            "blocks" : [
+                "wait_for_configure_acquisition"
+            ]
+            }
+        },
+        { "configure_for_acquisition" : {
+            "flags_on_start" : [
+                {"wait_for_configure_acquisition" : "True"}
+            ],
+            "flags_on_end" : [
+                {"wait_for_configure_acquisition" : "False"}
+            ],
+            "blocks" : []
+            }
+        },
+        { "configure_for_science" : {
+            "flags_on_start" : [
+                {"wait_for_configure_science" : "True"}
+            ],
+            "flags_on_end" : [
+                {"wait_for_configure_science" : "False"}
+            ],
+            "blocks" : []
+            }
+        },
+        { "execute_observation" : {
+            "flags_on_start" : [
+                {"wait_for_execute" : "True"}
+            ],
+            "flags_on_end" : [
+                {"wait_for_execute" : "False"}
+            ],
+            "blocks" : []
+            }
+        },
+        { "post_observation_cleanup" : {
+            "flags_on_start" : [
+                {"wait_for_cleanup" : "True"}
+            ],
+            "flags_on_end" : [
+                {"wait_for_cleanup" : "False"}
+            ],
+            "blocks" : [
+                "wait_for_execute"
+            ]
+            }
+        },
+        { "waitfor_configure_acquisition" : {
+            "flags_on_start" : [],
+            "flags_on_end" : [],
+            "blocks" : [
+                "wait_for_configure_acquisition"
+            ]
+            }
+        },
+        { "waitfor_configure_science" : {
+            "flags_on_start" : [],
+            "flags_on_end" : [],
+            "blocks" : [
+                "wait_for_configure_science"
+            ]
+            }
+        }
+    ],
+    "translators" : [
+        {"kpf" : "KPFTranslator"},
+        {"telescope" : "TelescopeTranslator"},
+        {"acquisition" : "AcquisitionTranslator"}
+    ]
+}
