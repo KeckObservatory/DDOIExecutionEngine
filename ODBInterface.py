@@ -30,18 +30,28 @@ class OBDInterface:
 
         return session
 
-    def get_semids(self):
-        url = f"{self.api_url}/observers/semesterIDs"
-        res = self.session.get(url)
+    def get_OB_from_id(self, id):
+        url = f"{self.api_url}/obsBlocks"
+        res = self.session.get(url, params={"ob_id" : id})
         if res.status_code == 200:
             data = res.json()
             return data
         else:
             print("What should I do here?")
 
-    def get_OBs_from_semIDs(self, semIDs):
-        url = f"{self.api_url}/search/ob"
-        for semID in semIDs:
-            res = self.session.get(url, params = {
-                "sem_id" : semID
-            })
+
+    # def get_semids(self):
+    #     url = f"{self.api_url}/observers/semesterIDs"
+    #     res = self.session.get(url)
+    #     if res.status_code == 200:
+    #         data = res.json()
+    #         return data
+    #     else:
+    #         print("What should I do here?")
+
+    # def get_OBs_from_semIDs(self, semIDs):
+    #     url = f"{self.api_url}/search/ob"
+    #     for semID in semIDs:
+    #         res = self.session.get(url, params = {
+    #             "sem_id" : semID
+    #         })
