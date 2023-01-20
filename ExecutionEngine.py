@@ -19,7 +19,7 @@ from multiprocessing import Process, Pipe
 from multiprocessing.connection import Connection
 from typing import Tuple, List
 
-from EventExecutor import EventExecutor
+from Queues.EventQueue.EventExecutor import EventExecutor
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
 from Queues.SequenceQueue.SequenceItem import SequenceItem
