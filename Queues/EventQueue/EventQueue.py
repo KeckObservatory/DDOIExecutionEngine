@@ -5,9 +5,9 @@ from Queues.EventQueue.EventItem import EventItem
 
 class ObservingQueue(DDOIBaseQueue):
 
-    def __init__(self, logger, name=None) -> None:
+    def __init__(self, logger=None, name=None) -> None:
         item_type = EventItem
-        super().__init__(item_type, name)
+        super().__init__(item_type, logger=logger, name=name)
 
         self.flags = {
             "block" : True,

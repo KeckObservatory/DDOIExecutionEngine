@@ -21,9 +21,9 @@ from typing import Tuple, List
 
 from Queues.EventQueue.EventExecutor import EventExecutor
 from Queues.BaseQueue import DDOIBaseQueue
-from Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
-from Queues.SequenceQueue.SequenceItem import SequenceItem
-from Queues.EventQueue.EventItem import EventItem
+from Queues.ObservingQueue import ObservingQueue
+from Queues.SequenceQueue import SequenceQueue
+from Queues.EventQueue import EventQueue
 
 class ExecutionEngine:
     """Class representing an instance of the Execution Engine
@@ -47,6 +47,7 @@ class ExecutionEngine:
     """
 
     def __init__(self) -> None:
+        self.logger = ""
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
 
 
@@ -58,81 +59,84 @@ class ExecutionEngine:
         Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]
             Observing Queue, Sequence Queue, Event Queue
         """
-        observing_queue = DDOIBaseQueue(ObservingBlockItem)
-        sequence_queue = DDOIBaseQueue(SequenceItem)
-        event_queue = DDOIBaseQueue(EventItem)
+        # observing_queue = DDOIBaseQueue(ObservingBlockItem)
+        # sequence_queue = DDOIBaseQueue(SequenceItem)
+        # event_queue = DDOIBaseQueue(EventItem)
+        observing_queue = ObservingQueue(name="observing_queue", logger=self.logger)
+        sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
+        event_queue = EventQueue(name="event_queue", logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
 
-    def OB_to_sequence(self) -> None:
-        """Transfers an OB from the front of the Observing Queue to the sequence
-        queue, splitting it up as required
+    # def OB_to_sequence(self) -> None:
+    #     """Transfers an OB from the front of the Observing Queue to the sequence
+    #     queue, splitting it up as required
 
-        Parameters
-        ----------
-        observing_queue : DDOIBaseQueue
-            Observing queue
-        sequence_queue : DDOIBaseQueue
-            Sequence Queue
-        """
-        OB = self.obs_q.get()
-        self.seq_q.put_many(self._decompose_OB(OB))
+    #     Parameters
+    #     ----------
+    #     observing_queue : DDOIBaseQueue
+    #         Observing queue
+    #     sequence_queue : DDOIBaseQueue
+    #         Sequence Queue
+    #     """
+    #     OB = self.obs_q.get()
+    #     self.seq_q.put_many(self._decompose_OB(OB))
 
-    def sequence_to_event(self) -> None:
-        """Transfers a sequence from the front of the sequence queue to the
-        event queue, splitting it up into events as required
+    # def sequence_to_event(self) -> None:
+    #     """Transfers a sequence from the front of the sequence queue to the
+    #     event queue, splitting it up into events as required
 
-        Parameters
-        ----------
-        sequence_queue : DDOIBaseQueue
-            Sequence queue
-        event_queue : DDOIBaseQueue
-            Event queue
-        """
-        sequence = self.seq_q.get()
-        self.ev_q.put_many(self._decompose_sequence(sequence))
+    #     Parameters
+    #     ----------
+    #     sequence_queue : DDOIBaseQueue
+    #         Sequence queue
+    #     event_queue : DDOIBaseQueue
+    #         Event queue
+    #     """
+    #     sequence = self.seq_q.get()
+    #     self.ev_q.put_many(self._decompose_sequence(sequence))
 
-    def _decompose_OB(self, OB) -> list:
-        """Takes an OB item from a queue and converts it to a list of sequences
+    # def _decompose_OB(self, OB) -> list:
+    #     """Takes an OB item from a queue and converts it to a list of sequences
 
-        Parameters
-        ----------
-        OB : ObervingBlockDataModel
-            Observing Block to decompose into sequences
+    #     Parameters
+    #     ----------
+    #     OB : ObervingBlockDataModel
+    #         Observing Block to decompose into sequences
 
-        Returns
-        -------
-        list
-            Python list of sequences
-        """
+    #     Returns
+    #     -------
+    #     list
+    #         Python list of sequences
+    #     """
 
-        output = [SequenceItem.from_sequence(seq) for seq in OB.sequences]
-        return output
+    #     output = [SequenceItem.from_sequence(seq) for seq in OB.sequences]
+    #     return output
 
-    def _decompose_sequence(self, sequence, script) -> List:
-        """Takes a sequence and breaks it down into executable events for the 
-        event queue. This requires:
-            - Parsing the script
-            - Determining which Translator Modules are needed
-            - Generating a process object that has access to:
-                - all needed arguements
-                - the needed Translator Module/Modules
-                - some way to communicate its status back to this ExEn
+    # def _decompose_sequence(self, sequence, script) -> List:
+    #     """Takes a sequence and breaks it down into executable events for the 
+    #     event queue. This requires:
+    #         - Parsing the script
+    #         - Determining which Translator Modules are needed
+    #         - Generating a process object that has access to:
+    #             - all needed arguements
+    #             - the needed Translator Module/Modules
+    #             - some way to communicate its status back to this ExEn
             
 
-        Parameters
-        ----------
-        sequence : SequenceDataModel
-            Sequence that should be decomposed
-        script : str
-            Script that should be used to parse the sequence
+    #     Parameters
+    #     ----------
+    #     sequence : SequenceDataModel
+    #         Sequence that should be decomposed
+    #     script : str
+    #         Script that should be used to parse the sequence
 
-        Returns
-        -------
-        list
-            Python list of events
-        """
-        return []
+    #     Returns
+    #     -------
+    #     list
+    #         Python list of events
+    #     """
+    #     return []
 
     def event_dispatcher(self, event_item) -> Tuple[Process, Connection]:
         """Takes an event item and dispatches it to a process
