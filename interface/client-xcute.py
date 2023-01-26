@@ -1,5 +1,5 @@
 import socketio
-from ExecutionEngine import ExecutionEngine 
+from core.ExecutionEngine import ExecutionEngine 
 import pdb
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingBlockItem import ObservingBlockItem
@@ -40,7 +40,7 @@ def main():
     def ob_to_xcute(data):
         newOB = data.get("ob")
         if bool(newOB):
-       	    obItem = ObservingBlockItem.from_DICT(newOB)
+            obItem = ObservingBlockItem.from_DICT(newOB)
             ee.obs_q.set_queue([obItem])
 
     @sio.event

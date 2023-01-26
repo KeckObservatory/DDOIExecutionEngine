@@ -1,6 +1,8 @@
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
 from Queues.SequenceQueue import SequenceQueue
+
+
 class ObservingQueue(DDOIBaseQueue):
 
     def __init__(self, logger=None, name=None) -> None:

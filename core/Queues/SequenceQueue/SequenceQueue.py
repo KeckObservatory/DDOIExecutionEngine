@@ -19,7 +19,7 @@ class ObservingQueue(DDOIBaseQueue):
 
         """
         sequences = [SequenceItem.from_sequence(seq) for seq in OB.sequences]
-        self.put_many(sequences)
+        self.put_many(sequences) # Should this be added here or in the other queue?
 
     def select_sequence(self, event_queue):
         """Pops the first sequence from this queue and adds the corresponding events

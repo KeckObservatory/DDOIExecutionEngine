@@ -49,6 +49,7 @@ class ExecutionEngine:
     def __init__(self) -> None:
         self.logger = ""
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
+        self.obs_q.select_ob(self.seq_q)
 
 
     def _create_queues(self) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
