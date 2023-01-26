@@ -68,6 +68,7 @@ class ExecutionEngine:
 
         return observing_queue, sequence_queue, event_queue
 
+
     # def OB_to_sequence(self) -> None:
     #     """Transfers an OB from the front of the Observing Queue to the sequence
     #     queue, splitting it up as required
@@ -138,37 +139,4 @@ class ExecutionEngine:
     #     """
     #     return []
 
-    def event_dispatcher(self, event_item) -> Tuple[Process, Connection]:
-        """Takes an event item and dispatches it to a process
-
-        Parameters
-        ----------
-        event_item : EventItem
-            EventItem that should be run
-
-        Returns
-        -------
-        Tuple[Process, Connection]
-            multiprocessing Process that is running the event, Pipe connection
-        """
-        def process_task(self, args) -> None:
-            # Create an Event Executor object
-            executor = EventExecutor(args["connection"], args["event_args"])
-            executor.run()
-
-        # Create a Pipe object for communication
-        parent_connection, child_connection = Pipe()
-
-        process_args = {
-            "connection":child_connection
-        }
-
-        p = Process(target=process_task, args = process_args)
-
-        return p, parent_connection
-
-    def execute_event(self) -> None:
-        event = self.ev_q.get()
-        proc, conn = self.event_dispatcher(event)
-        # Do something with the process here
-        # Write a method for registering the connection with the socket somehow
+    

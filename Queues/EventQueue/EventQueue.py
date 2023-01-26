@@ -72,6 +72,7 @@ class ObservingQueue(DDOIBaseQueue):
                     self.logger.error(f"Failed to find {el} within the {tm_name} module")
                     raise Exception() # TODO: figure out what to do with this
                 
+                
                 event = EventItem(args=sequence.parameters, func=f)
                 self.put_one(event)
 
@@ -85,4 +86,39 @@ class ObservingQueue(DDOIBaseQueue):
         """
         event = self.get()
 
+
+    def event_dispatcher(self, event_item):
+        """Takes an event item and dispatches it to a process
+
+        Parameters
+        ----------
+        event_item : EventItem
+            EventItem that should be run
+
+        Returns
+        -------
+        Tuple[Process, Connection]
+            multiprocessing Process that is running the event, Pipe connection
+        """
+        def process_task(self, args) -> None:
+            # Create an Event Executor object
+            executor = EventExecutor(args["connection"], args["event_args"])
+            executor.run()
+
+        # Create a Pipe object for communication
+        parent_connection, child_connection = Pipe(duplex=True)
+
+        process_args = {
+            "connection":child_connection
+        }
+
+        p = Process(target=process_task, args = process_args)
+
+        return p, parent_connection
+
+    def execute_event(self) -> None:
+        event = self.ev_q.get()
+        proc, conn = self.event_dispatcher(event)
+        # Do something with the process here
+        # Write a method for registering the connection with the socket somehow
         
