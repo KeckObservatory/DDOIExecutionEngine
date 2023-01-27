@@ -1,11 +1,25 @@
 import socketio
-from core.ExecutionEngine import ExecutionEngine 
+from ..core.ExecutionEngine import ExecutionEngine 
 import pdb
 import logging
-from core.Queues.BaseQueue import DDOIBaseQueue
-from core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
-from core.Queues.SequenceQueue.SequenceItem import SequenceItem
-from core.Queues.EventQueue.EventItem import EventItem
+from ..core.Queues.BaseQueue import DDOIBaseQueue
+from ..core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
+from ..core.Queues.SequenceQueue.SequenceItem import SequenceItem
+from ..core.Queues.EventQueue.EventItem import EventItem
+
+def create_logger(fileName='client-xcute.log'):
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(formatter)
+    fl = logging.FileHandler(fileName)
+    fl.setLevel(logging.INFO)
+    fl.setFormatter(formatter)
+    logger = logging.getLogger()
+    logger.addHandler(ch)
+    # logger.addHandler(fl)
+    logger.setLevel(logging.INFO)
+    return logger
 
 def main():
 
@@ -56,4 +70,5 @@ def main():
     sio.wait()
 
 if __name__ == "__main__":
+    logger = create_logger()
     main()
