@@ -15,15 +15,13 @@ Execution Engine Base Script. Key components are:
           execution
 """
 
-from multiprocessing import Process, Pipe
-from multiprocessing.connection import Connection
-from typing import Tuple, List
+from typing import Tuple
 
-from Queues.EventQueue.EventExecutor import EventExecutor
 from Queues.BaseQueue import DDOIBaseQueue
 from Queues.ObservingQueue import ObservingQueue
 from Queues.SequenceQueue import SequenceQueue
 from Queues.EventQueue import EventQueue
+from OBVault.Vault import Vault
 
 class ExecutionEngine:
     """Class representing an instance of the Execution Engine
@@ -48,6 +46,7 @@ class ExecutionEngine:
 
     def __init__(self) -> None:
         self.logger = ""
+        self.vault = Vault()
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
         self.obs_q.select_ob(self.seq_q)
 
