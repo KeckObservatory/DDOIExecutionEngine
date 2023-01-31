@@ -1,4 +1,7 @@
 class OBDM():
+
+    COMPONENTS = ['metadata', 'acquisition', 'science', 'target']
+
     def __init__(self, ob):
         self.ob = ob
         self._parse_ob()
@@ -11,7 +14,6 @@ class OBDM():
         self.acquisition = self.ob.get('acquisition', None)
         self.science = self.ob.get('science', None)
         self.target = self.ob.get('target', None)
-        self.COMPONENTS = ['metadata', 'acquisition', 'science', 'target']
 
     def get_script(self, name, version):
         """Retrieves a string of a high level telescope command, 
