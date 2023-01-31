@@ -22,14 +22,16 @@ class Vault():
             id : OBDM(json)
         })
 
-    def remove_ob(self, OB):
-        id = OB['_ob_id']
-        self.OBs.pop(id)
+    def remove_ob(self, ob_id):
+        self.OBs.pop(ob_id)
 
-    def update_ob(self, OB):
-        id = OB['_ob_id']
+    def update_ob(self, json):
+        id = json['_ob_id']
         if not id in self.OBs.keys():
             raise KeyError(f"No OB with ob_id = {id} found to update!")
         self.OBs.update({
-            id : OB
+            id : OBDM(json)
         })
+
+    def contains_ob_id(self, ob_id):
+        return ob_id in self.OBs.keys()
