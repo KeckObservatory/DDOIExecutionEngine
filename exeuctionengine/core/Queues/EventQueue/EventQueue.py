@@ -31,7 +31,7 @@ class EventQueue(DDOIBaseQueue):
         script_version = sequence['metadata']['version']
         script = self.odb_interace.get_script(instrument, script_name, script_version)
 
-        return script
+        return script.keys()
 
     def load_events_from_sequence(self, sequence):
         """Takes a sequence and breaks it down into executable events this queue
@@ -88,45 +88,45 @@ class EventQueue(DDOIBaseQueue):
 ## Fix Me! ##
 #############
 
-    def dispatch_event(self):
-        """Pull the top element of this queue and put it into the executing
-        area, after checking for the appropriate flags
-        """
-        event = self.get()
+    # def dispatch_event(self):
+    #     """Pull the top element of this queue and put it into the executing
+    #     area, after checking for the appropriate flags
+    #     """
+    #     event = self.get()
 
 
-    def event_dispatcher(self, event_item):
-        """Takes an event item and dispatches it to a process
+    # def event_dispatcher(self, event_item):
+    #     """Takes an event item and dispatches it to a process
 
-        Parameters
-        ----------
-        event_item : EventItem
-            EventItem that should be run
+    #     Parameters
+    #     ----------
+    #     event_item : EventItem
+    #         EventItem that should be run
 
-        Returns
-        -------
-        Tuple[Process, Connection]
-            multiprocessing Process that is running the event, Pipe connection
-        """
-        def process_task(self, args) -> None:
-            # Create an Event Executor object
-            executor = EventExecutor(args["connection"], args["event_args"])
-            executor.run()
+    #     Returns
+    #     -------
+    #     Tuple[Process, Connection]
+    #         multiprocessing Process that is running the event, Pipe connection
+    #     """
+    #     def process_task(self, args) -> None:
+    #         # Create an Event Executor object
+    #         executor = EventExecutor(args["connection"], args["event_args"])
+    #         executor.run()
 
-        # Create a Pipe object for communication
-        parent_connection, child_connection = Pipe(duplex=True)
+    #     # Create a Pipe object for communication
+    #     parent_connection, child_connection = Pipe(duplex=True)
 
-        process_args = {
-            "connection":child_connection
-        }
+    #     process_args = {
+    #         "connection":child_connection
+    #     }
 
-        p = Process(target=process_task, args = process_args)
+    #     p = Process(target=process_task, args = process_args)
 
-        return p, parent_connection
+    #     return p, parent_connection
 
-    def execute_event(self) -> None:
-        event = self.ev_q.get()
-        proc, conn = self.event_dispatcher(event)
-        # Do something with the process here
-        # Write a method for registering the connection with the socket somehow
+    # def execute_event(self) -> None:
+    #     event = self.ev_q.get()
+    #     proc, conn = self.event_dispatcher(event)
+    #     # Do something with the process here
+    #     # Write a method for registering the connection with the socket somehow
         

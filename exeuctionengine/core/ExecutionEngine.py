@@ -17,12 +17,11 @@ Execution Engine Base Script. Key components are:
 
 from typing import Tuple
 
-from Queues.BaseQueue import DDOIBaseQueue
-from Queues.ObservingQueue import ObservingQueue
-from Queues.SequenceQueue import SequenceQueue
-from Queues.EventQueue import EventQueue
-from OBVault.Vault import Vault
-from interface.ODBInterface import ODBInterface
+from exeuctionengine.core.Queues.BaseQueue import DDOIBaseQueue
+from exeuctionengine.core.Queues.ObservingQueue import ObservingQueue
+from exeuctionengine.core.Queues.SequenceQueue import SequenceQueue
+from exeuctionengine.core.Queues.EventQueue import EventQueue
+from exeuctionengine.interface.ODBInterface import ODBInterface
 
 class ExecutionEngine:
     """Class representing an instance of the Execution Engine

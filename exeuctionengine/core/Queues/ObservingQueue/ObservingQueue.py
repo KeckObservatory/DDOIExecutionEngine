@@ -1,6 +1,6 @@
-from Queues.BaseQueue import DDOIBaseQueue
-from Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
-from Queues.SequenceQueue import SequenceQueue
+from exeuctionengine.core.Queues import DDOIBaseQueue
+from exeuctionengine.core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
+from exeuctionengine.core.Queues.SequenceQueue import SequenceQueue
 
 
 class ObservingQueue(DDOIBaseQueue):
