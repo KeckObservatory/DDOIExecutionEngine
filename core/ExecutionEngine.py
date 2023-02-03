@@ -22,6 +22,7 @@ from Queues.ObservingQueue import ObservingQueue
 from Queues.SequenceQueue import SequenceQueue
 from Queues.EventQueue import EventQueue
 from OBVault.Vault import Vault
+from interface.ODBInterface import ODBInterface
 
 class ExecutionEngine:
     """Class representing an instance of the Execution Engine
@@ -46,12 +47,12 @@ class ExecutionEngine:
 
     def __init__(self) -> None:
         self.logger = ""
-        self.vault = Vault()
-        self.obs_q, self.seq_q, self.ev_q = self._create_queues()
+        self.ODBInterface = ODBInterface("../configs/cfg.ini")
+        self.obs_q, self.seq_q, self.ev_q = self._create_queues(self.ODBInterface)
         self.obs_q.select_ob(self.seq_q)
 
 
-    def _create_queues(self) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
+    def _create_queues(self, odb_interface) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
         """Creates the three queues
 
         Returns
@@ -62,9 +63,9 @@ class ExecutionEngine:
         # observing_queue = DDOIBaseQueue(ObservingBlockItem)
         # sequence_queue = DDOIBaseQueue(SequenceItem)
         # event_queue = DDOIBaseQueue(EventItem)
-        observing_queue = ObservingQueue(name="observing_queue", logger=self.logger)
-        sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
-        event_queue = EventQueue(name="event_queue", logger=self.logger)
+        observing_queue = ObservingQueue(name="observing_queue", interface=odb_interface, logger=self.logger)
+        sequence_queue = SequenceQueue(name="sequence_queue", interface=odb_interface, logger=self.logger)
+        event_queue = EventQueue(name="event_queue", interface=odb_interface, logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
 

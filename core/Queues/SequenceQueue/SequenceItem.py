@@ -2,9 +2,10 @@ from ..QueueItem import QueueItem
 
 class SequenceItem(QueueItem):
     
-    def __init__(self, num) -> None:
+    def __init__(self, seq, OB) -> None:
         super().__init__()
-        self.sequence_number = num
+        self.sequence = seq
+        self.OB = OB
         # self.metadata = None
         # self.parameters = None
 

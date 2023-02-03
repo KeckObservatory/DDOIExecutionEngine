@@ -3,7 +3,7 @@ from Queues.SequenceQueue.SequenceItem import SequenceItem
 from Queues.EventQueue import EventQueue
 
 
-class ObservingQueue(DDOIBaseQueue):
+class EventQueue(DDOIBaseQueue):
 
     def __init__(self, logger=None, name=None) -> None:
         item_type = SequenceItem
@@ -18,7 +18,7 @@ class ObservingQueue(DDOIBaseQueue):
             Observing Block to decompose into sequences
 
         """
-        sequences = [SequenceItem.from_sequence(seq) for seq in OB.sequences]
+        sequences = [SequenceItem.from_sequence(seq, OB) for seq in OB.sequences]
         self.put_many(sequences) # Should this be added here or in the other queue?
 
     def select_sequence(self, event_queue):

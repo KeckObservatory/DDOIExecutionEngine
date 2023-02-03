@@ -5,12 +5,14 @@ from Queues.SequenceQueue import SequenceQueue
 
 class ObservingQueue(DDOIBaseQueue):
 
-    def __init__(self, logger=None, name=None) -> None:
+    def __init__(self, logger=None, interface=None, name=None) -> None:
         item_type = ObservingBlockItem
+        self.odb_interface = interface
         super().__init__(item_type, logger=logger, name=name)
 
-    def load_OBs(self):
-        pass
+    def load_OB(self, id):
+        OB = self.odb_interface.get_ob_from_id(id)
+        self.put_one(ObservingBlockItem(OB=OB))
 
     def select_OB(self, sequence_queue):
         """Select the top OB of this queue for observation. The OB is popped
