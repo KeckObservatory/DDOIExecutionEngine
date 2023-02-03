@@ -25,7 +25,13 @@ class EventQueue(DDOIBaseQueue):
         sequence : SequenceItem
             Sequence that this function should find a script for
         """
-        return[]
+        # Get the script        
+        instrument = sequence['metadata']['instrument']
+        script_name = sequence['metadata']['name']
+        script_version = sequence['metadata']['version']
+        script = self.odb_interace.get_script(instrument, script_name, script_version)
+
+        return script
 
     def load_events_from_sequence(self, sequence):
         """Takes a sequence and breaks it down into executable events this queue
@@ -52,11 +58,8 @@ class EventQueue(DDOIBaseQueue):
             Python list of events
         """
 
-        # Get the script        
+        script = self.get_script(sequence)
         instrument = sequence['metadata']['instrument']
-        script_name = sequence['metadata']['name']
-        script_version = sequence['metadata']['version']
-        script = self.odb_interace.get_script(instrument, script_name, script_version)
 
         for el in script:
             if not self.ddoi_config['keywords'].has_key(el):
@@ -64,7 +67,7 @@ class EventQueue(DDOIBaseQueue):
                 raise NotImplementedError(f"Script element does not exist: {el}")
             
             try:
-                tm_name = f"{self.ddoi_cfg['translators'][instrument]}.ddoi_script_functions"
+                tm_name = f"{self.ddoi_cfg['translators'][sequence]}.ddoi_script_functions"
                 module = importlib.import_module(tm_name)
 
                 try:
