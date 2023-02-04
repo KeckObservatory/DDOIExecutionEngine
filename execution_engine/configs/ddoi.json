@@ -1,6 +1,6 @@
 {
-    "keywords" : [
-        { "acquire_target" : {
+    "keywords" : {
+        "ACQUIRE_TARGET" : {
             "flags_on_start" : [
                 {"acquiring" : "True"}
             ],
@@ -10,9 +10,8 @@
             "blocks" : [
                 "wait_for_configure_acquisition"
             ]
-            }
         },
-        { "configure_for_acquisition" : {
+        "CONFIGURE_FOR_ACQUISITION" : {
             "flags_on_start" : [
                 {"wait_for_configure_acquisition" : "True"}
             ],
@@ -20,9 +19,8 @@
                 {"wait_for_configure_acquisition" : "False"}
             ],
             "blocks" : []
-            }
         },
-        { "configure_for_science" : {
+        "CONFIGURE_FOR_SCIENCE" : {
             "flags_on_start" : [
                 {"wait_for_configure_science" : "True"}
             ],
@@ -30,9 +28,8 @@
                 {"wait_for_configure_science" : "False"}
             ],
             "blocks" : []
-            }
         },
-        { "execute_observation" : {
+        "EXECUTE_OBSERVATION" : {
             "flags_on_start" : [
                 {"wait_for_execute" : "True"}
             ],
@@ -40,9 +37,8 @@
                 {"wait_for_execute" : "False"}
             ],
             "blocks" : []
-            }
         },
-        { "post_observation_cleanup" : {
+        "POST_OBSERVATION_CLEANUP" : {
             "flags_on_start" : [
                 {"wait_for_cleanup" : "True"}
             ],
@@ -52,28 +48,25 @@
             "blocks" : [
                 "wait_for_execute"
             ]
-            }
         },
-        { "waitfor_configure_acquisition" : {
+        "WAITFOR_CONFIGURE_ACQUISITION" : {
             "flags_on_start" : [],
             "flags_on_end" : [],
             "blocks" : [
                 "wait_for_configure_acquisition"
             ]
-            }
         },
-        { "waitfor_configure_science" : {
+        "WAITFOR_CONFIGURE_SCIENCE" : {
             "flags_on_start" : [],
             "flags_on_end" : [],
             "blocks" : [
                 "wait_for_configure_science"
             ]
-            }
         }
-    ],
-    "translators" : [
-        {"kpf" : "KPFTranslator"},
-        {"telescope" : "TelescopeTranslator"},
-        {"acquisition" : "AcquisitionTranslator"}
-    ]
+    },
+    "translators" : {
+        "KPF" : "KPFTranslator",
+        "TELESCOPE" : "TelescopeTranslator",
+        "ACQUISITION" : "AcquisitionTranslator"
+    }
 }
