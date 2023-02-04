@@ -4,3 +4,4 @@ cfg.ini
 test_files/
 build/
 *ipynb*
+*.log
