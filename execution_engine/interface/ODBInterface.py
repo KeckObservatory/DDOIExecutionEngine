@@ -1,5 +1,5 @@
 from requests import Session, packages
-from requests.exceptions import JSONDecodeError
+# from requests.exceptions import JSONDecodeError
 import configparser
 
 class ODBInterface:
@@ -46,10 +46,10 @@ class ODBInterface:
             return data
         else:
             self.logger.error(f"Failed to get OB from the ODB! Got status code {res.status_code}")
-            try:
-                self.logger.error(f"Message: {res.json()}")
-            except JSONDecodeError as e:
-                self.logger.error(f"No decodable JSON to log")
+            # try:
+            #     self.logger.error(f"Message: {res.json()}")
+            # except JSONDecodeError as e:
+            #     self.logger.error(f"No decodable JSON to log")
         
             raise RuntimeError("Failed to recieve an OB from the database!")
     
@@ -67,10 +67,10 @@ class ODBInterface:
             raise NotImplementedError(f"No script matching {script_name} version {script_version} found in the ODB")
         else:
             self.logger.error(f"Failed to get scripts from the ODB! Got status code {res.status_code}")
-            try:
-                self.logger.error(f"Message: {res.json()}")
-            except JSONDecodeError as e:
-                self.logger.error(f"No decodable JSON to log")
+            # try:
+            #     self.logger.error(f"Message: {res.json()}")
+            # except JSONDecodeError as e:
+            #     self.logger.error(f"No decodable JSON to log")
         
             raise RuntimeError("Failed to recieve an OB from the database!")
 
