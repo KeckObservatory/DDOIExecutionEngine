@@ -75,7 +75,7 @@ class EventQueue(DDOIBaseQueue):
                 module = importlib.import_module(tm_name)
 
                 try:
-                    func = getattr(module, el)
+                    func = getattr(module, el.lower())
                 except AttributeError as e:
                     self.logger.error(f"Failed to find {el} within the {tm_name} module")
                     raise NotImplementedError(f"Failed to find {el} within the {tm_name} module")
