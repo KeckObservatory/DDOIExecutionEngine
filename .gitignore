@@ -1,3 +1,6 @@
 *__pycache__*
+*.egg*
 cfg.ini
 test_files/
+build/
+*ipynb*
