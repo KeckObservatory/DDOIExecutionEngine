@@ -47,13 +47,17 @@ class ExecutionEngine:
     ExEng.execute_event()
     """
 
-    def __init__(self) -> None:
+    def __init__(self, cfg, ddoi_cfg) -> None:
         self.logger = self.create_logger("test.log")
-        cfg_loc = os.path.dirname(os.path.abspath(__file__))
-        cfg = f"{cfg_loc}/../configs/cfg.ini"
-        cfg = "/Users/mbrodheim/ddoi/ExecutionEngine/execution_engine/configs/cfg.ini"
-        self.logger.debug(f"Creating ODB Interface from config file {cfg}")
-        self.ODBInterface = ODBInterface(cfg, self.logger)
+        self.cfg_loc = cfg
+        self.ddoi_cfg_loc = ddoi_cfg
+        # cfg_loc = os.path.dirname(os.path.abspath(__file__))
+        # cfg = f"{cfg_loc}/../configs/cfg.ini"
+        # cfg = "/Users/mbrodheim/ddoi/ExecutionEngine/execution_engine/configs/cfg.ini"
+        # ddo_cfg = "/Users/mbrodheim/ddoi/ExecutionEngine/execution_engine/configs/ddoi.json"
+
+        self.logger.debug(f"Creating ODB Interface from config file {self.cfg_loc}")
+        self.ODBInterface = ODBInterface(self.cfg_loc, self.logger)
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
 
 
@@ -70,8 +74,7 @@ class ExecutionEngine:
         # event_queue = DDOIBaseQueue(EventItem)
         observing_queue = ObservingQueue(name="observing_queue", interface=self.ODBInterface, logger=self.logger)
         sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
-        ddo_cfg = "/Users/mbrodheim/ddoi/ExecutionEngine/execution_engine/configs/ddoi.json"
-        event_queue = EventQueue(name="event_queue", ddoi_cfg = ddo_cfg, interface=self.ODBInterface, logger=self.logger)
+        event_queue = EventQueue(name="event_queue", ddoi_cfg = self.ddoi_cfg_loc, interface=self.ODBInterface, logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
 
