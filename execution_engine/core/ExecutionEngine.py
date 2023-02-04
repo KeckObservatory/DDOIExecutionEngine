@@ -16,12 +16,15 @@ Execution Engine Base Script. Key components are:
 """
 
 from typing import Tuple
+import os
+import logging
+from logging import StreamHandler, FileHandler
 
-from exeuctionengine.core.Queues.BaseQueue import DDOIBaseQueue
-from exeuctionengine.core.Queues.ObservingQueue import ObservingQueue
-from exeuctionengine.core.Queues.SequenceQueue import SequenceQueue
-from exeuctionengine.core.Queues.EventQueue import EventQueue
-from exeuctionengine.interface.ODBInterface import ODBInterface
+from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
+from execution_engine.core.Queues.ObservingQueue.ObservingQueue import ObservingQueue
+from execution_engine.core.Queues.SequenceQueue.SequenceQueue import SequenceQueue
+from execution_engine.core.Queues.EventQueue.EventQueue import EventQueue
+from execution_engine.interface.ODBInterface import ODBInterface
 
 class ExecutionEngine:
     """Class representing an instance of the Execution Engine
@@ -45,13 +48,16 @@ class ExecutionEngine:
     """
 
     def __init__(self) -> None:
-        self.logger = ""
-        self.ODBInterface = ODBInterface("../configs/cfg.ini")
-        self.obs_q, self.seq_q, self.ev_q = self._create_queues(self.ODBInterface)
-        self.obs_q.select_ob(self.seq_q)
+        self.logger = self.create_logger("test.log")
+        cfg_loc = os.path.dirname(os.path.abspath(__file__))
+        cfg = f"{cfg_loc}/../configs/cfg.ini"
+        cfg = "/Users/mbrodheim/ddoi/ExecutionEngine/execution_engine/configs/cfg.ini"
+        self.logger.debug(f"Creating ODB Interface from config file {cfg}")
+        self.ODBInterface = ODBInterface(cfg, self.logger)
+        self.obs_q, self.seq_q, self.ev_q = self._create_queues()
 
 
-    def _create_queues(self, odb_interface) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
+    def _create_queues(self) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
         """Creates the three queues
 
         Returns
@@ -62,13 +68,26 @@ class ExecutionEngine:
         # observing_queue = DDOIBaseQueue(ObservingBlockItem)
         # sequence_queue = DDOIBaseQueue(SequenceItem)
         # event_queue = DDOIBaseQueue(EventItem)
-        observing_queue = ObservingQueue(name="observing_queue", interface=odb_interface, logger=self.logger)
-        sequence_queue = SequenceQueue(name="sequence_queue", interface=odb_interface, logger=self.logger)
-        event_queue = EventQueue(name="event_queue", interface=odb_interface, logger=self.logger)
+        observing_queue = ObservingQueue(name="observing_queue", interface=self.ODBInterface, logger=self.logger)
+        sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
+        event_queue = EventQueue(name="event_queue", interface=self.ODBInterface, logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
 
-
+    def create_logger(self, fileName):
+      # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+      # zmq_log_handler = dl.ZMQHandler(subsystem, configLoc, author, progid, semid)
+      ch = StreamHandler()
+      # ch.setLevel(logging.INFO)
+      # ch.setFormatter(formatter)
+      fl = FileHandler(fileName)
+      # fl.setLevel(logging.DEBUG)
+      # fl.setFormatter(formatter)
+      logger = logging.getLogger()
+      # logger.addHandler(zmq_log_handler)
+      logger.addHandler(ch)
+      logger.addHandler(fl)
+      return logger
     # def OB_to_sequence(self) -> None:
     #     """Transfers an OB from the front of the Observing Queue to the sequence
     #     queue, splitting it up as required

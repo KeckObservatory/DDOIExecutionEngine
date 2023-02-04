@@ -1,4 +1,4 @@
-from ..QueueItem import QueueItem
+from execution_engine.core.Queues.QueueItem import QueueItem
 
 class SequenceItem(QueueItem):
     

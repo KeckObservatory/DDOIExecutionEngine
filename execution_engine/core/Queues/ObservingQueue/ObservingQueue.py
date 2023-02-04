@@ -1,6 +1,6 @@
-from exeuctionengine.core.Queues import DDOIBaseQueue
-from exeuctionengine.core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
-from exeuctionengine.core.Queues.SequenceQueue import SequenceQueue
+from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
+from execution_engine.core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
+from execution_engine.core.Queues.SequenceQueue.SequenceQueue import SequenceQueue
 
 
 class ObservingQueue(DDOIBaseQueue):
@@ -11,7 +11,7 @@ class ObservingQueue(DDOIBaseQueue):
         super().__init__(item_type, logger=logger, name=name)
 
     def load_OB(self, id):
-        OB = self.odb_interface.get_ob_from_id(id)
+        OB = self.odb_interface.get_OB_from_id(id)
         self.put_one(ObservingBlockItem(OB=OB))
 
     def select_OB(self, sequence_queue):
@@ -30,7 +30,7 @@ class ObservingQueue(DDOIBaseQueue):
             raise Exception("ADD MORE HERE")
 
         OB = self.get()
-        sequences = sequence_queue.load_sequences_from_OB(OB)
-        self.logger.debug(f"Adding {len(sequences)} elements to the sequence queue")
-        sequence_queue.put_many(sequences)
+        # self.logger.debug(f"Adding {len(OB.OBsequences)} elements to the sequence queue")
+        sequence_queue.load_sequences_from_OB(OB)
+        # sequence_queue.put_many(sequences)
 

@@ -4,7 +4,7 @@ import configparser
 
 class ODBInterface:
 
-    def __init__(self, cfg_file, logger=None):
+    def __init__(self, cfg_file, logger):
         
         packages.urllib3.disable_warnings()
 
@@ -12,6 +12,7 @@ class ODBInterface:
 
         self.cfg = configparser.ConfigParser()
         self.logger.debug(f"Parsing config file: {cfg_file}")
+        print(f"CFG: {cfg_file}")
         self.cfg.read(cfg_file)
 
         self.api_url = self.cfg['URLS']["api_url"]
@@ -29,7 +30,7 @@ class ODBInterface:
             "ODB-API-UID" : self.cfg["CREDENTIALS"]["APIUID"]
         }
 
-        self.loggger.debug(f"Loading cookies from cfg file")
+        self.logger.debug(f"Loading cookies from cfg file")
         session.cookies.update(cookies)
 
         return session

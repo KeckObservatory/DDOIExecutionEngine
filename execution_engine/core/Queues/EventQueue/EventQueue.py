@@ -1,7 +1,7 @@
 import importlib
 
-from Queues.BaseQueue import DDOIBaseQueue
-from Queues.EventQueue.EventItem import EventItem
+from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
+from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
 class EventQueue(DDOIBaseQueue):
 
@@ -13,7 +13,7 @@ class EventQueue(DDOIBaseQueue):
             "block" : True,
             "wait_for_config" : True
         }
-        self.odb_interface = interface
+        self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = {}
 
@@ -26,12 +26,12 @@ class EventQueue(DDOIBaseQueue):
             Sequence that this function should find a script for
         """
         # Get the script        
-        instrument = sequence['metadata']['instrument']
-        script_name = sequence['metadata']['name']
-        script_version = sequence['metadata']['version']
-        script = self.odb_interace.get_script(instrument, script_name, script_version)
+        instrument = sequence.sequence['metadata']['instrument']
+        script_name = sequence.sequence['metadata']['name']
+        script_version = sequence.sequence['metadata']['version']
+        script = self.ODB_interface.get_script(instrument, script_name, script_version)
 
-        return script.keys()
+        return [el for el in script[0]]
 
     def load_events_from_sequence(self, sequence):
         """Takes a sequence and breaks it down into executable events this queue
@@ -59,6 +59,7 @@ class EventQueue(DDOIBaseQueue):
         """
 
         script = self.get_script(sequence)
+        print(script)
         instrument = sequence['metadata']['instrument']
 
         for el in script:
@@ -67,7 +68,7 @@ class EventQueue(DDOIBaseQueue):
                 raise NotImplementedError(f"Script element does not exist: {el}")
             
             try:
-                tm_name = f"{self.ddoi_cfg['translators'][sequence]}.ddoi_script_functions"
+                tm_name = f"{self.ddoi_cfg['translators'][instrument]}.ddoi_script_functions"
                 module = importlib.import_module(tm_name)
 
                 try:

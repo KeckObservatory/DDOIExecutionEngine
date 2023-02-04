@@ -1,9 +1,9 @@
-from Queues.BaseQueue import DDOIBaseQueue
-from Queues.SequenceQueue.SequenceItem import SequenceItem
-from Queues.EventQueue import EventQueue
+from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
+from execution_engine.core.Queues.SequenceQueue.SequenceItem import SequenceItem
+from execution_engine.core.Queues.EventQueue.EventQueue import EventQueue
 
 
-class EventQueue(DDOIBaseQueue):
+class SequenceQueue(DDOIBaseQueue):
 
     def __init__(self, logger=None, name=None) -> None:
         item_type = SequenceItem
@@ -18,8 +18,9 @@ class EventQueue(DDOIBaseQueue):
             Observing Block to decompose into sequences
 
         """
-        sequences = [SequenceItem.from_sequence(seq, OB) for seq in OB.sequences]
-        self.put_many(sequences) # Should this be added here or in the other queue?
+        sequences = [seq for seq in OB.OB['observations']]
+        for sequence in sequences:
+            self.put_one(SequenceItem(sequence, OB))
 
     def select_sequence(self, event_queue):
         """Pops the first sequence from this queue and adds the corresponding events
@@ -33,7 +34,6 @@ class EventQueue(DDOIBaseQueue):
 
         if not isinstance(event_queue, EventQueue):
             self.logger.error("Object passed into select_sequence is not a sequence queue!")
-            raise Exception("ADD MORE HERE")
 
         sequence = self.get()
 
