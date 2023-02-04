@@ -71,13 +71,13 @@ class EventQueue(DDOIBaseQueue):
                 raise NotImplementedError(f"Script element does not exist: {el}")
             
             try:
-                tm_name = f"{self.ddoi_config['translators'][instrument]}.ddoi_script_functions"
+                tm_name = f"{self.ddoi_config['translators'][instrument]}.ddoi_script_functions.{el.lower()}"
                 module = importlib.import_module(tm_name)
 
                 try:
                     func = getattr(module, el.lower())
                 except AttributeError as e:
-                    self.logger.error(f"Failed to find {el} within the {tm_name} module")
+                    self.logger.error(f"Failed to find {el.lower()} within the {tm_name} module")
                     raise NotImplementedError(f"Failed to find {el} within the {tm_name} module")
                 
                 
