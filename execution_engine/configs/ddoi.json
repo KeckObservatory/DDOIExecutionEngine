@@ -65,7 +65,7 @@
         }
     },
     "translators" : {
-        "KPF" : "KPFTranslator",
+        "KPF" : "kpf",
         "TELESCOPE" : "TelescopeTranslator",
         "ACQUISITION" : "AcquisitionTranslator"
     }
