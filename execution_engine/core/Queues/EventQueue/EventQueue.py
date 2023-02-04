@@ -1,11 +1,12 @@
 import importlib
+import json
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
 class EventQueue(DDOIBaseQueue):
 
-    def __init__(self, logger=None, interface=None, name=None) -> None:
+    def __init__(self, logger=None, ddoi_cfg=None, interface=None, name=None) -> None:
         item_type = EventItem
         super().__init__(item_type, logger=logger, name=name)
 
@@ -15,7 +16,7 @@ class EventQueue(DDOIBaseQueue):
         }
         self.ODB_interface = interface
         self.logger = logger
-        self.ddoi_config = {}
+        self.ddoi_config = json.load(open(ddoi_cfg))
 
     def get_script(self, sequence):
         """Fetch a DDOI script for this sequence
@@ -30,8 +31,10 @@ class EventQueue(DDOIBaseQueue):
         script_name = sequence.sequence['metadata']['name']
         script_version = sequence.sequence['metadata']['version']
         script = self.ODB_interface.get_script(instrument, script_name, script_version)
-
-        return [el for el in script[0]]
+        output = []
+        for el in script:
+            output.append(el[0])
+        return output
 
     def load_events_from_sequence(self, sequence):
         """Takes a sequence and breaks it down into executable events this queue
@@ -60,15 +63,15 @@ class EventQueue(DDOIBaseQueue):
 
         script = self.get_script(sequence)
         print(script)
-        instrument = sequence['metadata']['instrument']
+        instrument = sequence.sequence['metadata']['instrument']
 
         for el in script:
-            if not self.ddoi_config['keywords'].has_key(el):
+            if not el in self.ddoi_config['keywords'].keys():
                 self.logger.error(f"Invalid script option encountered: {el}")
                 raise NotImplementedError(f"Script element does not exist: {el}")
             
             try:
-                tm_name = f"{self.ddoi_cfg['translators'][instrument]}.ddoi_script_functions"
+                tm_name = f"{self.ddoi_config['translators'][instrument]}.ddoi_script_functions"
                 module = importlib.import_module(tm_name)
 
                 try:
@@ -84,6 +87,7 @@ class EventQueue(DDOIBaseQueue):
             except ImportError as e:
                 self.logger.error(f"Error while importing!")
                 self.logger.error(e)
+                raise e
 
 #############
 ## Fix Me! ##
