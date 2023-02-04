@@ -70,7 +70,8 @@ class ExecutionEngine:
         # event_queue = DDOIBaseQueue(EventItem)
         observing_queue = ObservingQueue(name="observing_queue", interface=self.ODBInterface, logger=self.logger)
         sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
-        event_queue = EventQueue(name="event_queue", interface=self.ODBInterface, logger=self.logger)
+        ddo_cfg = "/Users/mbrodheim/ddoi/ExecutionEngine/execution_engine/configs/ddoi.json"
+        event_queue = EventQueue(name="event_queue", ddoi_cfg = ddo_cfg, interface=self.ODBInterface, logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
 
