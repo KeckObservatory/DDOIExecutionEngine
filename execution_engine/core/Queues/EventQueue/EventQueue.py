@@ -1,5 +1,7 @@
 import importlib
 import json
+import logging
+import multiprocessing
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
@@ -17,6 +19,14 @@ class EventQueue(DDOIBaseQueue):
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = json.load(open(ddoi_cfg))
+
+        # Event Dispatching Bookkeeping
+        self.processes = []
+        self.queue = multiprocessing.Queue()
+        num_workers = int(self.ddoi_config['event_config']['num_processes'])
+        for i in range(num_workers):
+            p = multiprocessing.Process(target=self.run, args=(self.queue, f"worker_{i}"))
+            p.start()
 
     def get_script(self, sequence):
         """Fetch a DDOI script for this sequence
@@ -93,45 +103,43 @@ class EventQueue(DDOIBaseQueue):
 ## Fix Me! ##
 #############
 
-    # def dispatch_event(self):
-    #     """Pull the top element of this queue and put it into the executing
-    #     area, after checking for the appropriate flags
-    #     """
-    #     event = self.get()
+    def dispatch_event(self):
+        """Pull the top element of this queue and put it into the executing
+        area, after checking for the appropriate flags
+        """
+        event = self.get()
+
+        self.queue.put({
+            "id" : event.id,
+            "logger_name" : self.logger,
+            "event_item" : event
+        })
 
 
-    # def event_dispatcher(self, event_item):
-    #     """Takes an event item and dispatches it to a process
+    def run(self, args):
+        queue = args[0]
+        name = args[1]
 
-    #     Parameters
-    #     ----------
-    #     event_item : EventItem
-    #         EventItem that should be run
+        while(True):
+            if queue.empty():
+                continue
+            
+            # Pull from the queue
+            event = queue.get()
 
-    #     Returns
-    #     -------
-    #     Tuple[Process, Connection]
-    #         multiprocessing Process that is running the event, Pipe connection
-    #     """
-    #     def process_task(self, args) -> None:
-    #         # Create an Event Executor object
-    #         executor = EventExecutor(args["connection"], args["event_args"])
-    #         executor.run()
+            logger = logging.getLogger(event['logger_name'])
+            logger.info(f"{name} accepted event {event['id']}")
 
-    #     # Create a Pipe object for communication
-    #     parent_connection, child_connection = Pipe(duplex=True)
+            if event['kill']:
+                logger.info(f"Closing event worker process '{name}' by request")
+                break
 
-    #     process_args = {
-    #         "connection":child_connection
-    #     }
+            # Do it, while communicating with a Pipe?
+            # pipe = event['pipe']
 
-    #     p = Process(target=process_task, args = process_args)
+            event_item = event['event_item']
 
-    #     return p, parent_connection
-
-    # def execute_event(self) -> None:
-    #     event = self.ev_q.get()
-    #     proc, conn = self.event_dispatcher(event)
-    #     # Do something with the process here
-    #     # Write a method for registering the connection with the socket somehow
-        
+            event_item.execute()
+            
+            # Check if stay_alive has changed
+            pass
