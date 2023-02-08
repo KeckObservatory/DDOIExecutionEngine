@@ -1,6 +1,4 @@
 import importlib
-import json
-import logging
 import multiprocessing
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
@@ -18,7 +16,7 @@ class EventQueue(DDOIBaseQueue):
         }
         self.ODB_interface = interface
         self.logger = logger
-        self.ddoi_config = json.load(open(ddoi_cfg))
+        self.ddoi_config = ddoi_cfg
         self.blocked = False
 
         # Event Dispatching Bookkeeping
