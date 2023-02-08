@@ -1,11 +1,11 @@
 import socketio
-from ..core.ExecutionEngine import ExecutionEngine 
+from execution_engine.core.ExecutionEngine import ExecutionEngine 
 import pdb
 import logging
-from ..core.Queues.BaseQueue import DDOIBaseQueue
-from ..core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
-from ..core.Queues.SequenceQueue.SequenceItem import SequenceItem
-from ..core.Queues.EventQueue.EventItem import EventItem
+from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
+from execution_engine.core.Queues.ObservingQueue.ObservingBlockItem import ObservingBlockItem
+from execution_engine.core.Queues.SequenceQueue.SequenceItem import SequenceItem
+from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
 def create_logger(fileName='client-xcute.log'):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
