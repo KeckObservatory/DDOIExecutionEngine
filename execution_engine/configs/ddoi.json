@@ -1,67 +1,25 @@
 {
     "keywords" : {
         "ACQUIRE_TARGET" : {
-            "flags_on_start" : [
-                {"acquiring" : "True"}
-            ],
-            "flags_on_end" : [
-                {"acquiring" : "False"}
-            ],
-            "blocks" : [
-                "wait_for_configure_acquisition"
-            ]
+            "blocks" : false
         },
         "CONFIGURE_FOR_ACQUISITION" : {
-            "flags_on_start" : [
-                {"wait_for_configure_acquisition" : "True"}
-            ],
-            "flags_on_end" : [
-                {"wait_for_configure_acquisition" : "False"}
-            ],
-            "blocks" : []
+            "blocks" : false
         },
         "CONFIGURE_FOR_SCIENCE" : {
-            "flags_on_start" : [
-                {"wait_for_configure_science" : "True"}
-            ],
-            "flags_on_end" : [
-                {"wait_for_configure_science" : "False"}
-            ],
-            "blocks" : []
+            "blocks" : false
         },
         "EXECUTE_OBSERVATION" : {
-            "flags_on_start" : [
-                {"wait_for_execute" : "True"}
-            ],
-            "flags_on_end" : [
-                {"wait_for_execute" : "False"}
-            ],
-            "blocks" : []
+            "blocks" : false
         },
         "POST_OBSERVATION_CLEANUP" : {
-            "flags_on_start" : [
-                {"wait_for_cleanup" : "True"}
-            ],
-            "flags_on_end" : [
-                {"wait_for_cleanup" : "False"}
-            ],
-            "blocks" : [
-                "wait_for_execute"
-            ]
+            "blocks" : true
         },
         "WAITFOR_CONFIGURE_ACQUISITION" : {
-            "flags_on_start" : [],
-            "flags_on_end" : [],
-            "blocks" : [
-                "wait_for_configure_acquisition"
-            ]
+            "blocks" : true
         },
         "WAITFOR_CONFIGURE_SCIENCE" : {
-            "flags_on_start" : [],
-            "flags_on_end" : [],
-            "blocks" : [
-                "wait_for_configure_science"
-            ]
+            "blocks" : true
         }
     },
     "translators" : {

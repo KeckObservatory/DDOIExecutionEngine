@@ -19,6 +19,7 @@ class EventQueue(DDOIBaseQueue):
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = json.load(open(ddoi_cfg))
+        self.blocked = False
 
         # Event Dispatching Bookkeeping
         self.processes = []
@@ -103,15 +104,21 @@ class EventQueue(DDOIBaseQueue):
 ## Fix Me! ##
 #############
 
-    def dispatch_event(self):
+    def dispatch_event(self, force=False):
         """Pull the top element of this queue and put it into the executing
         area, after checking for the appropriate flags
         """
+
+        if self.blocked and not force:
+            raise SystemError("Event Queue is blocked, but an event dispatch was requested")
+        
         event = self.get()
+
+        if event.block:
+            self.blocked = True
 
         self.queue.put({
             "id" : event.id,
-            "logger_name" : self.logger,
             "event_item" : event
         })
 
@@ -119,6 +126,7 @@ class EventQueue(DDOIBaseQueue):
     def run(self, args):
         queue = args[0]
         name = args[1]
+        logger = args[2]
 
         while(True):
             if queue.empty():
@@ -127,19 +135,28 @@ class EventQueue(DDOIBaseQueue):
             # Pull from the queue
             event = queue.get()
 
-            logger = logging.getLogger(event['logger_name'])
             logger.info(f"{name} accepted event {event['id']}")
 
             if event['kill']:
-                logger.info(f"Closing event worker process '{name}' by request")
+                logger.info(f"{name} exiting by request")
                 break
 
             # Do it, while communicating with a Pipe?
             # pipe = event['pipe']
 
             event_item = event['event_item']
-
+            logger.info(f"Executing event")
             event_item.execute()
             
-            # Check if stay_alive has changed
-            pass
+
+    def kill_workers(self, nicely=True):
+        if nicely:
+            self.logger.info(f"Requesting that {len(self.processes)} workers exit")
+            for proc in self.processes:
+                self.queue.put({
+                    "kill" : True,
+                })
+        else:
+            self.logger.info(f"Terminating {len(self.processes)} workers")
+            for proc in self.processes:
+                proc.kill()
