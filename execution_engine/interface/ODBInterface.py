@@ -4,16 +4,13 @@ import configparser
 
 class ODBInterface:
 
-    def __init__(self, cfg_file, logger):
+    def __init__(self, cfg, logger):
         
         packages.urllib3.disable_warnings()
 
         self.logger = logger
 
-        self.cfg = configparser.ConfigParser()
-        self.logger.debug(f"Parsing config file: {cfg_file}")
-        print(f"CFG: {cfg_file}")
-        self.cfg.read(cfg_file)
+        self.cfg = cfg
 
         self.api_url = self.cfg['URLS']["api_url"]
         self.logger.debug(f"Set OBDInterface base URL to {self.api_url}")

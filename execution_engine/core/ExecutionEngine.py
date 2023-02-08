@@ -21,6 +21,7 @@ import logging
 from logging import StreamHandler, FileHandler
 import pkg_resources
 import json
+import configparser
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.ObservingQueue.ObservingQueue import ObservingQueue
@@ -51,9 +52,13 @@ class ExecutionEngine:
 
     def __init__(self, logger, cfg) -> None:
         self.logger = logger
-        self.cfg_loc = cfg
 
-        # Handle config
+        # Handle API config
+        self.cfg = configparser.ConfigParser()
+        self.logger.debug(f"Parsing config file: {cfg}")
+        self.cfg.read(cfg)
+
+        # Handle DDOI config
         pkg = "executionengine"
         cfgpath = "configs/ddoi.json"
         self.ddoi_cfg_log_path = pkg_resources.resource_filename(pkg, cfgpath)
@@ -61,7 +66,7 @@ class ExecutionEngine:
         self.ddoi_cfg = json.load(ddoicfg)
 
         self.logger.debug(f"Creating ODB Interface from config file {self.cfg_loc}")
-        self.ODBInterface = ODBInterface(self.cfg_loc, self.logger)
+        self.ODBInterface = ODBInterface(self.cfg, self.logger)
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
 
 
