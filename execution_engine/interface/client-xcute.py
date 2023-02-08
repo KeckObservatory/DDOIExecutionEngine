@@ -23,7 +23,11 @@ def create_logger(fileName='client-xcute.log'):
 
 def main():
 
-    ee = ExecutionEngine()
+    logger = create_logger()
+
+    cfg=""
+
+    ee = ExecutionEngine(logger=logger, cfg=cfg)
     host = '0.0.0.0'
     port = '50007'
     url = 'http://' + host + ':' + port
@@ -70,5 +74,4 @@ def main():
     sio.wait()
 
 if __name__ == "__main__":
-    logger = create_logger()
     main()
