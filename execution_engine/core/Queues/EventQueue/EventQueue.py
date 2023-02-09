@@ -120,7 +120,7 @@ class EventQueue(DDOIBaseQueue):
             "event_item" : event
         })
 
-
+    @staticmethod
     def run(queue, name, logger):
         # queue = args[0]
         # name = args[1]
