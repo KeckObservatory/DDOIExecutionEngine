@@ -59,7 +59,7 @@ class ExecutionEngine:
         self.cfg.read(cfg)
 
         # Handle DDOI config
-        pkg = "executionengine"
+        pkg = "execution_engine"
         cfgpath = "configs/ddoi.json"
         self.ddoi_cfg_log_path = pkg_resources.resource_filename(pkg, cfgpath)
         ddoicfg = open(self.ddoi_cfg_log_path)
