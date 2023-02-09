@@ -52,6 +52,8 @@ class ExecutionEngine:
 
     def __init__(self, logger, cfg) -> None:
         self.logger = logger
+        self.logger.info("Logger set in Execution Engine")
+        print(cfg)
 
         # Handle API config
         self.cfg = configparser.ConfigParser()
