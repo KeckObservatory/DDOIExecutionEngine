@@ -24,7 +24,7 @@ class EventQueue(DDOIBaseQueue):
         self.queue = multiprocessing.Queue()
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
         for i in range(num_workers):
-            p = multiprocessing.Process(target=self.run, args=(self.queue, f"worker_{i}"))
+            p = multiprocessing.Process(target=self.run, args=(self.queue, f"worker_{i}", self.logger))
             p.start()
 
     def get_script(self, sequence):
@@ -121,10 +121,10 @@ class EventQueue(DDOIBaseQueue):
         })
 
 
-    def run(self, args):
-        queue = args[0]
-        name = args[1]
-        logger = args[2]
+    def run(queue, name, logger):
+        # queue = args[0]
+        # name = args[1]
+        # logger = args[2]
 
         while(True):
             if queue.empty():
