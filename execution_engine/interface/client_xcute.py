@@ -18,7 +18,7 @@ def create_logger(fileName='client-xcute.log'):
     fl.setFormatter(formatter)
     logger = logging.getLogger()
     logger.addHandler(ch)
-    # logger.addHandler(fl)
+    logger.addHandler(fl)
     logger.setLevel(logging.INFO)
     return logger
 
