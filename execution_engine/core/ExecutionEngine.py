@@ -65,7 +65,7 @@ class ExecutionEngine:
         ddoicfg = open(self.ddoi_cfg_log_path)
         self.ddoi_cfg = json.load(ddoicfg)
 
-        self.logger.debug(f"Creating ODB Interface from config file {self.cfg_loc}")
+        self.logger.debug(f"Creating ODB Interface")
         self.ODBInterface = ODBInterface(self.cfg, self.logger)
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
 
