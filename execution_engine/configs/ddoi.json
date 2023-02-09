@@ -26,5 +26,8 @@
         "KPF" : "kpf",
         "TELESCOPE" : "TelescopeTranslator",
         "ACQUISITION" : "AcquisitionTranslator"
+    },
+    "event_config" : {
+        "num_processes" : 5
     }
 }
