@@ -1,4 +1,5 @@
 import socketio
+import sys
 from execution_engine.core.ExecutionEngine import ExecutionEngine 
 import pdb
 import logging
@@ -21,11 +22,9 @@ def create_logger(fileName='client-xcute.log'):
     logger.setLevel(logging.INFO)
     return logger
 
-def main():
+def main(cfg=""):
 
     logger = create_logger()
-
-    cfg=""
 
     ee = ExecutionEngine(logger=logger, cfg=cfg)
     host = '0.0.0.0'
@@ -74,4 +73,4 @@ def main():
     sio.wait()
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])
