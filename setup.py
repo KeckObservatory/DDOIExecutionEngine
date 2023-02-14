@@ -8,6 +8,7 @@ setup(
               'execution_engine.core', 
               'execution_engine.interface', 
               'execution_engine.core', 
+              'execution_engine.core.Queues',
               'execution_engine.core.Queues.SequenceQueue',
               'execution_engine.core.Queues.ObservingQueue',
               'execution_engine.core.Queues.EventQueue'],
