@@ -90,7 +90,7 @@ class EventQueue(DDOIBaseQueue):
                     raise NotImplementedError(f"Failed to find {el} within the {tm_name} module")
                 
                 
-                event = EventItem(args=sequence, func=func, ddoi_config=self.ddoi_config)
+                event = EventItem(args=sequence, func=func, func_name=el.lower(), ddoi_config=self.ddoi_config)
                 self.put_one(event)
 
             except ImportError as e:
