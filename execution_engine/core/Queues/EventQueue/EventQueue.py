@@ -14,15 +14,16 @@ class EventQueue(DDOIBaseQueue):
         item_type = EventItem
         super().__init__(item_type, logger=logger, name=name)
 
-        self.flags = {
-            "block" : True,
-            "wait_for_config" : True
-        }
+        
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = ddoi_cfg
         self.lock = multiprocessing.Lock()
 
+        if not enable_dispatching:
+            self.logger.warning("Set up event queue in simulate only mode")
+        
+        
         # Event Dispatching Bookkeeping
         self.processes = []
         self.queue = multiprocessing.Queue()
