@@ -4,6 +4,10 @@ import multiprocessing
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
+# This variable dictates whether events are allowed to be dispatched. For
+# deployment, set this to True. Otherwise, leave it as False.
+enable_dispatching = False
+
 class EventQueue(DDOIBaseQueue):
 
     def __init__(self, logger=None, ddoi_cfg=None, interface=None, name=None) -> None:
@@ -17,15 +21,17 @@ class EventQueue(DDOIBaseQueue):
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = ddoi_cfg
-        self.blocked = False
+        self.lock = multiprocessing.Lock()
 
         # Event Dispatching Bookkeeping
         self.processes = []
         self.queue = multiprocessing.Queue()
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
+        self.logger.info(f"Spawning {num_workers} event execution processes")
         for i in range(num_workers):
             p = multiprocessing.Process(target=self.run, args=(self.queue, f"worker_{i}", self.logger))
             p.start()
+            self.logger.debug(f"Event Queue started worker_{i}")
 
     def get_script(self, sequence):
         """Fetch a DDOI script for this sequence
@@ -107,24 +113,30 @@ class EventQueue(DDOIBaseQueue):
         area, after checking for the appropriate flags
         """
 
-        if self.blocked and not force:
+        if self.lock.acquire(block=False) and not force:
+            self.logger.error("Tried to fetch an event while blocked!")
             raise SystemError("Event Queue is blocked, but an event dispatch was requested")
         
         event = self.get()
 
         if event.block:
-            self.blocked = True
+            self.logger.debug(f"Event ID {event.id} acquiring blocking lock.")
+            self.lock.acquire(block=True)
+            self.logger.debug(f"Event ID {event.id} acquired lock.")
 
-        self.queue.put({
-            "id" : event.id,
-            "event_item" : event
-        })
+        
+        if enable_dispatching:
+            self.logger.info(f"Submitting event {event.id} to the queue")
+            self.queue.put({
+                "id" : event.id,
+                "event_item" : event,
+                "lock" : self.lock
+            })
+        else:
+            self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
 
     @staticmethod
-    def run(queue, name, logger):
-        # queue = args[0]
-        # name = args[1]
-        # logger = args[2]
+    def run(queue, name, logger, lock=None):
 
         while(True):
             if queue.empty():
@@ -139,22 +151,45 @@ class EventQueue(DDOIBaseQueue):
                 logger.info(f"{name} exiting by request")
                 break
 
-            # Do it, while communicating with a Pipe?
-            # pipe = event['pipe']
-
             event_item = event['event_item']
             logger.info(f"Executing event")
-            event_item.execute()
-            
+            try:
+                event_item.execute()
+                if lock is not None:
+                    logger.debug(f"{name} attempting to release the blocking lock")
+                    try:
+                        lock.release()
+                    except ValueError as e:
+                        logger.error(f"{name} attempted to release the blocking lock, but it was already unlocked!")
+            except Exception as e:
+                logger.error(f"Exception while trying to execute {name}!")
+                logger.error(e)
+                return
 
-    def kill_workers(self, nicely=True):
+    def kill_workers(self, block=True, nicely=True):
         if nicely:
             self.logger.info(f"Requesting that {len(self.processes)} workers exit")
             for proc in self.processes:
                 self.queue.put({
                     "kill" : True,
                 })
+            
         else:
             self.logger.info(f"Terminating {len(self.processes)} workers")
             for proc in self.processes:
                 proc.kill()
+        
+        def all_procs_dead(processes):
+            for proc in processes:
+                if proc.is_alive():
+                    return False
+            return True  
+        
+        if block:
+            self.logger.info("Waiting for event queue workers to self destruct")
+            while (not all_procs_dead(self.processes)):
+                continue
+        
+            
+        if all_procs_dead(self.processes):
+            self.logger.info("All workers are dead, as expected")
