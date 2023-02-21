@@ -9,6 +9,12 @@ class SequenceItem(QueueItem):
         # self.metadata = None
         # self.parameters = None
 
+    def as_dict(self):
+        return {
+            "id" : self.id,
+            "sequence" : self.sequence,
+            "OB" : self.OB
+        }
     # @classmethod
     # def from_sequence(cls, sequence):
     #     ret = SequenceItem()

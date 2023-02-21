@@ -8,3 +8,10 @@ class EventItem(QueueItem):
         self.func = func
         self.script_name = func_name
         self.ddoi_config = ddoi_config
+
+    def as_dict(self):
+        return {
+            "id" : self.id,
+            "args" : self.args,
+            "script_name" : self.script_name
+        }

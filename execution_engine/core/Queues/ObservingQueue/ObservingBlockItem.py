@@ -4,33 +4,12 @@ from ..QueueItem import QueueItem
 
 class ObservingBlockItem(QueueItem):
 
-    def __init__(self, OB) -> None:
+    def __init__(self, ob_info) -> None:
         super().__init__()
-        self.OB = OB
-    #     self.metadata = None
-    #     self.acquisition = None
-    #     self.sequences = None
-    #     self.target = None
-    #     self.COMPONENTS = None
+        self.ob_info = ob_info
 
-    # @staticmethod
-    # def create_observing_block_item(ob):
-    #     ret = ObservingBlockItem()
-    #     ret.metadata = ob.get('metadata', None)
-    #     ret.acquisition = ob.get('acquisition', None)
-    #     ret.sequences = ob.get('observations', None)
-    #     ret.target = ob.get('target', None)
-    #     ret.COMPONENTS = ['metadata', 'sequences', 'science', 'target']
-    #     return ret
-
-    # @classmethod
-    # def from_DICT(cls, ob):
-    #     ret = cls.create_observing_block_item(ob)
-    #     return ret
-       
-
-    # @classmethod
-    # def from_JSON(cls, filename):
-    #     ob = json.load(filename)
-    #     ret = cls.create_observing_block_item(ob)
-    #     return ret
+    def as_dict(self):
+        return {
+            "id" : self.id,
+            "ob_info" : self.ob_info
+        }
