@@ -137,15 +137,14 @@ class DDOIBaseQueue():
         return original_len - len(self)
         
 
-    def get_queue_as_json(self) -> str:
-        """Gets the contents of the queue as a json list. Each QueueItem is 
-        converted into a string for serialization
+    def get_queue_as_list(self) -> str:
+        """Gets the contents of the queue as a list of dictionaries
 
         Returns
         -------
-        str
-            JSON list containing the contents of the queue
+        list
+            List of dictionaries created from QueueItem.as_dict() calls
         """
-        l = [str(i) for i in list(self.queue)]
-        return json.dumps(l)
+        l = [i.as_dict() for i in list(self.queue)]
+        return l
 
