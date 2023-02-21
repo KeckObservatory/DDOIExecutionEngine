@@ -1,5 +1,6 @@
 import importlib
 import multiprocessing
+import time
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
@@ -166,6 +167,8 @@ class EventQueue(DDOIBaseQueue):
                 logger.error(f"Exception while trying to execute {name}!")
                 logger.error(e)
                 return
+            
+            time.sleep(1)
 
     def kill_workers(self, block=True, nicely=True):
         if nicely:
