@@ -137,7 +137,7 @@ class DDOIBaseQueue():
         return original_len - len(self)
         
 
-    def get_queue_as_list(self) -> str:
+    def get_queue_as_list(self):
         """Gets the contents of the queue as a list of dictionaries
 
         Returns
