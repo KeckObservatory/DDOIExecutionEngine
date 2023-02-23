@@ -4,6 +4,7 @@ from collections import deque
 import json
 
 from .QueueItem import QueueItem
+import multiprocessing
 
 class DDOIBaseQueue():
 
@@ -51,7 +52,10 @@ class DDOIBaseQueue():
             Raised if element is not a QueueItem
         """
         if isinstance(element, self.item_type):
-            self.queue.append(element)
+            if isinstance(self.queue, multiprocessing.queues.Queue):
+                self.queue.put(element)
+            else:
+                self.queue.append(element)
         else:
             raise TypeError(f"Expected {self.item_type} but got {type(element)}")
 
@@ -72,7 +76,10 @@ class DDOIBaseQueue():
             if not isinstance(i, self.item_type):
                 raise TypeError(f"Expected {self.item_type} but got {type(i)}")
         for i in elements:
-            self.queue.append(i)
+            if isinstance(self.queue, multiprocessing.queues.Queue):
+                self.queue.put(i)
+            else:
+                self.queue.append(i)
 
 
     def get(self) -> QueueItem:
@@ -132,7 +139,10 @@ class DDOIBaseQueue():
 
         # Add the new contents
         for i in new_contents:
-            self.queue.append(i)
+            if isinstance(self.queue, multiprocessing.queues.Queue):
+                self.queue.put(i)
+            else:
+                self.queue.append(i)
         
         return original_len - len(self)
         
