@@ -168,7 +168,7 @@ class EventQueue(DDOIBaseQueue):
 
             logger.info(f"Executing event {event.script_name}")
             try:
-                event.func(event.args)
+                event.func.execute(event.args)
                 if lock is not None:
                     logger.debug(f"{name} attempting to release the blocking lock")
                     try:
