@@ -118,7 +118,7 @@ class EventQueue(DDOIBaseQueue):
         area, after checking for the appropriate flags
         """
 
-        isBlocked = self.lock.acquire(block=False)
+        isBlocked = not self.lock.acquire(block=False)
         if isBlocked and not force:
             self.logger.error("Tried to fetch an event while blocked!")
             raise SystemError("Event Queue is blocked, but an event dispatch was requested")
