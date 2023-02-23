@@ -29,7 +29,10 @@ class ObservingQueue(DDOIBaseQueue):
             self.logger.error("Object passed into select_OB is not a sequence queue!")
             raise Exception("ADD MORE HERE")
 
-        OB = self.get()
+        OB_item = self.get()
+
+        OB = self.odb_interface.get_OB_from_id(OB_item.ob_id)
+
         # self.logger.debug(f"Adding {len(OB.OBsequences)} elements to the sequence queue")
         sequence_queue.load_sequences_from_OB(OB)
         # sequence_queue.put_many(sequences)
