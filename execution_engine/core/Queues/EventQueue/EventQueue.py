@@ -147,16 +147,15 @@ class EventQueue(DDOIBaseQueue):
             # Pull from the queue
             event = queue.get()
 
-            logger.info(f"{name} accepted event {event['id']}")
+            logger.info(f"{name} accepted event {event.id}")
 
-            if event['kill']:
-                logger.info(f"{name} exiting by request")
-                break
+            # if event['kill']:
+            #     logger.info(f"{name} exiting by request")
+            #     break
 
-            event_item = event['event_item']
-            logger.info(f"Executing event")
+            logger.info(f"Executing event {event.script_name}")
             try:
-                event_item.execute()
+                # event.func()
                 if lock is not None:
                     logger.debug(f"{name} attempting to release the blocking lock")
                     try:
