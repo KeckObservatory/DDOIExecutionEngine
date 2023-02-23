@@ -145,7 +145,10 @@ class EventQueue(DDOIBaseQueue):
             })
         else:
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
-            if isBlocked: self.lock.release()
+            try:
+                self.lock.release()
+            except ValueError as e:
+                self.logger.error(f"{event.script_name} attempted to release the blocking lock, but it was already unlocked!")
 
     @staticmethod
     def run(mqueue, name, logger, lock=None):
