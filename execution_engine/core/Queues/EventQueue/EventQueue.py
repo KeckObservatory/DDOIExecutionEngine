@@ -31,7 +31,7 @@ class EventQueue(DDOIBaseQueue):
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
         self.logger.info(f"Spawning {num_workers} event execution processes")
         for i in range(num_workers):
-            p = multiprocessing.Process(target=self.run, args=(self.queue, f"worker_{i}", self.logger))
+            p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}", self.logger))
             p.start()
             self.logger.debug(f"Event Queue started worker_{i}")
 
@@ -129,7 +129,7 @@ class EventQueue(DDOIBaseQueue):
         
         if enable_dispatching:
             self.logger.info(f"Submitting event {event.id} to the queue")
-            self.queue.put({
+            self.multi_queue.put({
                 "id" : event.id,
                 "event_item" : event,
                 "lock" : self.lock
@@ -138,14 +138,14 @@ class EventQueue(DDOIBaseQueue):
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
 
     @staticmethod
-    def run(queue, name, logger, lock=None):
+    def run(mqueue, name, logger, lock=None):
 
         while(True):
-            if queue.empty():
+            if mqueue.empty():
                 continue
             
             # Pull from the queue
-            event = queue.get()
+            event = mqueue.get()
 
             logger.info(f"{name} accepted event {event.id}")
 
