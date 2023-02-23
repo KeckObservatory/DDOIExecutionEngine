@@ -52,6 +52,7 @@ class DDOIBaseQueue():
         """
         if isinstance(element, self.item_type):
             self.queue.append(element)
+        else:
             raise TypeError(f"Expected {self.item_type} but got {type(element)}")
 
     def put_many(self, elements) -> None:
