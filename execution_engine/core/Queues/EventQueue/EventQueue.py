@@ -97,11 +97,13 @@ class EventQueue(DDOIBaseQueue):
                     self.logger.error(f"Failed to find {el.lower()} within the {tm_name} module")
                     raise NotImplementedError(f"Failed to find {el} within the {tm_name} module")
                 
-                
+                #TODO: include lock boolean 
+                block = True 
                 event = EventItem(args=sequence.as_dict(),
                                   func=func, 
                                   func_name=el.lower(), 
-                                  ddoi_config=self.ddoi_config)
+                                  ddoi_config=self.ddoi_config,
+                                  block=block)
                 self.put_one(event)
 
             except ImportError as e:
@@ -118,7 +120,8 @@ class EventQueue(DDOIBaseQueue):
         area, after checking for the appropriate flags
         """
 
-        isBlocked = not self.lock.acquire(block=False)
+        isBlocked = not self.lock.acquire(block=False) # blocks
+        self.lock.release() # need to release lock
         if isBlocked and not force:
             self.logger.error("Tried to fetch an event while blocked!")
             raise SystemError("Event Queue is blocked, but an event dispatch was requested")
@@ -129,6 +132,8 @@ class EventQueue(DDOIBaseQueue):
             self.logger.debug(f"Event ID {event.id} acquiring blocking lock.")
             self.lock.acquire(block=True)
             self.logger.debug(f"Event ID {event.id} acquired lock.")
+        else: 
+            if isBlocked: self.lock.release()
 
         
         if enable_dispatching:
