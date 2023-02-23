@@ -149,9 +149,9 @@ class EventQueue(DDOIBaseQueue):
 
             logger.info(f"{name} accepted event {event.id}")
 
-            # if event['kill']:
-            #     logger.info(f"{name} exiting by request")
-            #     break
+            if event.get('kill', None):
+                logger.info(f"{name} exiting by request")
+                break
 
             logger.info(f"Executing event {event.script_name}")
             try:
