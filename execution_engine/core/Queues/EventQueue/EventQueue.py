@@ -27,7 +27,7 @@ class EventQueue(DDOIBaseQueue):
         
         # Event Dispatching Bookkeeping
         self.processes = []
-        self.queue = multiprocessing.Queue()
+        self.multi_queue = multiprocessing.Queue()
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
         self.logger.info(f"Spawning {num_workers} event execution processes")
         for i in range(num_workers):
@@ -147,16 +147,15 @@ class EventQueue(DDOIBaseQueue):
             # Pull from the queue
             event = queue.get()
 
-            logger.info(f"{name} accepted event {event['id']}")
+            logger.info(f"{name} accepted event {event.id}")
 
-            if event['kill']:
-                logger.info(f"{name} exiting by request")
-                break
+            # if event['kill']:
+            #     logger.info(f"{name} exiting by request")
+            #     break
 
-            event_item = event['event_item']
-            logger.info(f"Executing event")
+            logger.info(f"Executing event {event.script_name}")
             try:
-                event_item.execute()
+                # event.func(event.args)
                 if lock is not None:
                     logger.debug(f"{name} attempting to release the blocking lock")
                     try:
