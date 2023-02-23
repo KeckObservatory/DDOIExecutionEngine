@@ -37,3 +37,6 @@ class ObservingQueue(DDOIBaseQueue):
         sequence_queue.load_sequences_from_OB(OB)
         # sequence_queue.put_many(sequences)
 
+    def get_ob_ids(self):
+       return [ x.ob_id for x in [*self.queue] ]
+
