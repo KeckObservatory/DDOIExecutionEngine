@@ -19,7 +19,7 @@ class EventQueue(DDOIBaseQueue):
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = ddoi_cfg
-        self.lock = multiprocessing.Lock(block=False)
+        self.lock = multiprocessing.Lock()
 
         if not enable_dispatching:
             self.logger.warning("Set up event queue in simulate only mode")
