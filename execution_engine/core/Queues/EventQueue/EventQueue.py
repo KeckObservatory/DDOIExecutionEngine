@@ -19,7 +19,7 @@ class EventQueue(DDOIBaseQueue):
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = ddoi_cfg
-        self.lock = multiprocessing.Lock()
+        self.lock = multiprocessing.Lock(block=False)
 
         if not enable_dispatching:
             self.logger.warning("Set up event queue in simulate only mode")
@@ -118,7 +118,7 @@ class EventQueue(DDOIBaseQueue):
         area, after checking for the appropriate flags
         """
 
-        if self.lock.acquire(block=False) and not force:
+        if self.lock.locked() and not force:
             self.logger.error("Tried to fetch an event while blocked!")
             raise SystemError("Event Queue is blocked, but an event dispatch was requested")
         
