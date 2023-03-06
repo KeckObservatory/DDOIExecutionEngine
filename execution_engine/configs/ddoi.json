@@ -29,7 +29,7 @@
         },
         "WAITFOR_CONFIGURE_SCIENCE" : {
             "blocks" : true
-        }
+        },
         "WAITFOR_ACQUIRE" : {
             "blocks" : true 
         },
