@@ -1,9 +1,18 @@
 {
     "keywords" : {
+        "ACQUIRE" : {
+            "blocks" : false
+        },
         "ACQUIRE_TARGET" : {
             "blocks" : false
         },
+        "BEGIN_SLEW" : {
+            "blocks" : false
+        },
         "CONFIGURE_FOR_ACQUISITION" : {
+            "blocks" : false
+        },
+        "CONFIGURE_SCIENCE" : {
             "blocks" : false
         },
         "CONFIGURE_FOR_SCIENCE" : {
@@ -21,6 +30,12 @@
         "WAITFOR_CONFIGURE_SCIENCE" : {
             "blocks" : true
         }
+        "WAITFOR_ACQUIRE" : {
+            "blocks" : true 
+        },
+        "WAITFOR_SLEW" : {
+            "blocks" : true 
+        },
     },
     "translators" : {
         "KPF" : "kpf",
