@@ -88,14 +88,24 @@ class EventQueue(DDOIBaseQueue):
                 raise NotImplementedError(f"Script element does not exist: {el}")
             
             try:
-                tm_name = f"{self.ddoi_config['translators'][instrument]}.ddoi_script_functions.{el.lower()}"
-                module = importlib.import_module(tm_name)
+
+                # Import the right translator module
+                if self.ddoi_config['keywords']['translator'] == "INSTRUMENT":
+                    tm_name = self.ddoi_config['translators'][instrument]
+                elif self.ddoi_config['keywords']['translator'] == "ACQUISITION":
+                    tm_name = self.ddoi_config['translators']["ACQUISITION"]
+                elif self.ddoi_config['keywords']['translator'] == "TELESCOPE":
+                    tm_name = self.ddoi_config['translators']["TELESCOPE"]
+
+                full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
+
+                module = importlib.import_module(full_function_name)
 
                 try:
                     func = getattr(module, el.lower())
                 except AttributeError as e:
-                    self.logger.error(f"Failed to find {el.lower()} within the {tm_name} module")
-                    raise NotImplementedError(f"Failed to find {el} within the {tm_name} module")
+                    self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
+                    raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
                 
                 #TODO: include lock boolean 
                 block = True 
