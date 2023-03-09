@@ -1,40 +1,48 @@
 {
     "keywords" : {
         "ACQUIRE" : {
-            "blocks" : false
-        },
-        "ACQUIRE_TARGET" : {
-            "blocks" : false
+            "blocks" : false,
+            "translator" : "ACQUISITION"
         },
         "BEGIN_SLEW" : {
-            "blocks" : false
+            "blocks" : false,
+            "translator" : "TELESCOPE"
         },
         "CONFIGURE_FOR_ACQUISITION" : {
-            "blocks" : false
+            "blocks" : false,
+            "translator" : "ACQUISITION"
         },
         "CONFIGURE_SCIENCE" : {
-            "blocks" : false
+            "blocks" : false,
+            "translator" : "INSTRUMENT"
         },
         "CONFIGURE_FOR_SCIENCE" : {
-            "blocks" : false
+            "blocks" : false,
+            "translator" : "INSTRUMENT"
         },
         "EXECUTE_OBSERVATION" : {
-            "blocks" : false
+            "blocks" : false,
+            "translator" : "INSTRUMENT"
         },
         "POST_OBSERVATION_CLEANUP" : {
-            "blocks" : true
+            "blocks" : true,
+            "translator" : "INSTRUMENT"
         },
         "WAITFOR_CONFIGURE_ACQUISITION" : {
-            "blocks" : true
+            "blocks" : true,
+            "translator" : "INSTRUMENT"
         },
         "WAITFOR_CONFIGURE_SCIENCE" : {
-            "blocks" : true
+            "blocks" : true,
+            "translator" : "INSTRUMENT"
         },
         "WAITFOR_ACQUIRE" : {
-            "blocks" : true 
+            "blocks" : true ,
+            "translator" : "ACQUISITION"
         },
         "WAITFOR_SLEW" : {
-            "blocks" : true 
+            "blocks" : true ,
+            "translator" : "TELESCOPE"
         }
     },
     "translators" : {
