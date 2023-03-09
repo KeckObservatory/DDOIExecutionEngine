@@ -10,7 +10,7 @@
         },
         "CONFIGURE_FOR_ACQUISITION" : {
             "blocks" : false,
-            "translator" : "ACQUISITION"
+            "translator" : "INSTRUMENT"
         },
         "CONFIGURE_SCIENCE" : {
             "blocks" : false,
