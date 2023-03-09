@@ -47,8 +47,8 @@
     },
     "translator_import_names" : {
         "KPF" : "kpf",
-        "TELESCOPE" : "TelescopeTranslator",
-        "ACQUISITION" : "AcquisitionTranslator"
+        "TELESCOPE" : "telescopetranslator",
+        "ACQUISITION" : "acquisitiontranslator"
     },
     "event_config" : {
         "num_processes" : 5
