@@ -45,7 +45,7 @@
             "translator" : "TELESCOPE"
         }
     },
-    "translators" : {
+    "translator_import_names" : {
         "KPF" : "kpf",
         "TELESCOPE" : "TelescopeTranslator",
         "ACQUISITION" : "AcquisitionTranslator"

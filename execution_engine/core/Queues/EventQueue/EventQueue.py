@@ -90,12 +90,12 @@ class EventQueue(DDOIBaseQueue):
             try:
 
                 # Import the right translator module
-                if self.ddoi_config['keywords']['translator'] == "INSTRUMENT":
-                    tm_name = self.ddoi_config['translators'][instrument]
-                elif self.ddoi_config['keywords']['translator'] == "ACQUISITION":
-                    tm_name = self.ddoi_config['translators']["ACQUISITION"]
-                elif self.ddoi_config['keywords']['translator'] == "TELESCOPE":
-                    tm_name = self.ddoi_config['translators']["TELESCOPE"]
+                if self.ddoi_config['keywords'][el]['translator'] == "INSTRUMENT":
+                    tm_name = self.ddoi_config['translator_import_names'][instrument]
+                elif self.ddoi_config['keywords'][el]['translator'] == "ACQUISITION":
+                    tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
+                elif self.ddoi_config['keywords'][el]['translator'] == "TELESCOPE":
+                    tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
 
                 full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
 
