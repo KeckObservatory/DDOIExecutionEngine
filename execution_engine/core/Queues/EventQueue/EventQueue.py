@@ -164,6 +164,8 @@ class EventQueue(DDOIBaseQueue):
     def run(mqueue, name, logger, lock=None):
 
         while(True):
+
+            time.sleep(1)
             if mqueue.empty():
                 continue
             
@@ -190,7 +192,6 @@ class EventQueue(DDOIBaseQueue):
                 logger.error(e)
                 return
             
-            time.sleep(1)
 
     def kill_workers(self, block=True, nicely=True):
         if nicely:
