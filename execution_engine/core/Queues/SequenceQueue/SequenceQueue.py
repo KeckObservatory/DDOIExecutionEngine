@@ -40,3 +40,6 @@ class SequenceQueue(DDOIBaseQueue):
         events = event_queue.load_events_from_sequence(sequence)
 
         # event_queue.put_many(events)
+
+    def get_sequences(self):
+       return [ x.sequence for x in [*self.queue] ]

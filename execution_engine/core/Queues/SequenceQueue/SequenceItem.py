@@ -14,5 +14,3 @@ class SequenceItem(QueueItem):
             "OB" : self.OB
         }
     
-    def get_sequences(self):
-       return [ x.sequence for x in [*self.queue] ]
