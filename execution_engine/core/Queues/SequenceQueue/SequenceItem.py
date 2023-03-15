@@ -6,8 +6,6 @@ class SequenceItem(QueueItem):
         super().__init__()
         self.sequence = seq
         self.OB = OB
-        # self.metadata = None
-        # self.parameters = None
 
     def as_dict(self):
         return {
@@ -15,9 +13,6 @@ class SequenceItem(QueueItem):
             "sequence" : self.sequence,
             "OB" : self.OB
         }
-    # @classmethod
-    # def from_sequence(cls, sequence):
-    #     ret = SequenceItem()
-    #     ret.metadata = sequence['metadata']
-    #     ret.parameters = sequence['parameters']
-    #     return ret
+    
+    def get_sequence_ids(self):
+       return [ x.sequence for x in [*self.queue] ]
