@@ -48,7 +48,7 @@ class ODBInterface:
             # except JSONDecodeError as e:
             #     self.logger.error(f"No decodable JSON to log")
         
-            raise RuntimeError("Failed to recieve an OB from the database!")
+            raise RuntimeError("Failed to receive an OB from the database!")
     
     def get_script(self, instrument, script_name, script_version):
         url = f"{self.api_url}/instrumentPackages/{instrument.upper()}/scripts"
@@ -69,7 +69,7 @@ class ODBInterface:
             # except JSONDecodeError as e:
             #     self.logger.error(f"No decodable JSON to log")
         
-            raise RuntimeError("Failed to recieve an OB from the database!")
+            raise RuntimeError("Failed to receive an OB from the database!")
 
     def close_session(self):
         self.session.close()

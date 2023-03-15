@@ -39,14 +39,14 @@ def main(cfg=""):
 
     @sio.event
     def sequence_queue_to_xcute(data):
-        logging.info('sequence_queue_to_xcute recieved', data)
+        logging.info('sequence_queue_to_xcute received', data)
         seqDict = data.get('sequence_queue')
         newSequenceQueue = [ SequenceItem.from_sequence(x) for x in seqDict ]
         ee.seq_q.set_queue(newSequenceQueue)
 
     @sio.event
     def event_queue_to_xcute(data):
-        logging.info('event_queue_to_xcute recieved', data)
+        logging.info('event_queue_to_xcute received', data)
         eventDict = data.get('event_queue')
         #TODO: straighten out event item (does not use from_sequence)
         newEventQueue = [ EventItem.from_sequence(x) for x in eventDict ]
@@ -64,7 +64,7 @@ def main(cfg=""):
 
     @sio.event
     def task_to_xcute(data):
-        logging.info('task_to_excute recieved', data)
+        logging.info('task_to_excute received', data)
 
     @sio.event
     def disconnect():

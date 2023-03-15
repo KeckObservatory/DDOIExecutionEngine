@@ -51,6 +51,6 @@
         "ACQUISITION" : "acquisitiontranslator"
     },
     "event_config" : {
-        "num_processes" : 5
+        "num_processes" : 2
     }
 }

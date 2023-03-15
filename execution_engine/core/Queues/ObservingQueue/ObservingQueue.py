@@ -7,6 +7,7 @@ class ObservingQueue(DDOIBaseQueue):
 
     def __init__(self, logger=None, interface=None, name=None) -> None:
         item_type = ObservingBlockItem
+        self.submitted_ob_id = ""
         self.odb_interface = interface
         super().__init__(item_type, logger=logger, name=name)
 
@@ -30,6 +31,7 @@ class ObservingQueue(DDOIBaseQueue):
             raise Exception("ADD MORE HERE")
 
         OB_item = self.get()
+        self.submitted_ob_id = OB_item.ob_id
 
         OB = self.odb_interface.get_OB_from_id(OB_item.ob_id)
 
