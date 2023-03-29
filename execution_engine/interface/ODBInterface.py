@@ -56,7 +56,7 @@ class ODBInterface:
         res = self.session.get(url)
 
         if res.status_code == 200:
-            script = next(x for x in res.json() if x['metadata']['name']==script_name), False)
+            script = next((x for x in res.json() if x['metadata']['name']==script_name), False)
             if script:
                 return script["script"]
             raise NotImplementedError(f"No script matching {script_name} found in the ODB")
