@@ -35,7 +35,7 @@ class EventQueue(DDOIBaseQueue):
             p.start()
             self.logger.debug(f"Event Queue started worker_{i}")
 
-    def get_script(self, sequence):
+    def get_script(self, instrument, script_name, script_version):
         """Fetch a DDOI script for this sequence
 
         Parameters
@@ -44,9 +44,6 @@ class EventQueue(DDOIBaseQueue):
             Sequence that this function should find a script for
         """
         # Get the script        
-        instrument = sequence.sequence['metadata']['instrument']
-        script_name = sequence.sequence['metadata']['name']
-        script_version = sequence.sequence['metadata']['version']
         script = self.ODB_interface.get_script(instrument, script_name, script_version)
         output = []
         for el in script:
@@ -73,7 +70,10 @@ class EventQueue(DDOIBaseQueue):
             Script that should be used to parse the sequence
         """
 
-        script = self.get_script(sequence)
+        instrument = sequence.sequence['metadata']['instrument']
+        script_name = sequence.sequence['metadata']['name']
+        script_version = sequence.sequence['metadata']['version']
+        script = self.get_script(instrument, script_name, script_version)
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
@@ -90,9 +90,11 @@ class EventQueue(DDOIBaseQueue):
             Target that should be decomposed into function args
         """
 
-        script = self.get_script(acquisition)
-        print(script)
         instrument = acquisition['metadata']['instrument']
+        script_name = acquisition['metadata']['script']
+        script_version = acquisition.sequence['metadata']['version']
+        script = self.get_script(instrument, script_name, script_version)
+        print(script)
         args = { 'acquisition': acquisition, 'target': target}
         for el in script:
             self._add_event_item(el, args, instrument)
