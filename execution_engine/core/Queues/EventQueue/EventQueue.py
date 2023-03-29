@@ -92,7 +92,7 @@ class EventQueue(DDOIBaseQueue):
 
         instrument = acquisition['metadata']['instrument']
         script_name = acquisition['metadata']['script']
-        script_version = acquisition.sequence['metadata']['version']
+        script_version = acquisition['metadata']['version']
         script = self.get_script(instrument, script_name, script_version)
         print(script)
         args = { 'acquisition': acquisition, 'target': target}
