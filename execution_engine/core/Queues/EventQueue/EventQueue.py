@@ -35,7 +35,7 @@ class EventQueue(DDOIBaseQueue):
             p.start()
             self.logger.debug(f"Event Queue started worker_{i}")
 
-    def get_script(self, sequence):
+    def get_script(self, instrument, script_name):
         """Fetch a DDOI script for this sequence
 
         Parameters
@@ -44,10 +44,7 @@ class EventQueue(DDOIBaseQueue):
             Sequence that this function should find a script for
         """
         # Get the script        
-        instrument = sequence.sequence['metadata']['instrument']
-        script_name = sequence.sequence['metadata']['name']
-        script_version = sequence.sequence['metadata']['version']
-        script = self.ODB_interface.get_script(instrument, script_name, script_version)
+        script = self.ODB_interface.get_script(instrument, script_name)
         output = []
         for el in script:
             output.append(el[0])
@@ -71,56 +68,76 @@ class EventQueue(DDOIBaseQueue):
             Sequence that should be decomposed
         script : str
             Script that should be used to parse the sequence
-
-        Returns
-        -------
-        list
-            Python list of events
         """
 
-        script = self.get_script(sequence)
+        instrument = sequence.sequence['metadata']['instrument']
+        script_name = sequence.sequence['metadata']['script']
+        script = self.get_script(instrument, script_name)
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
-
         for el in script:
-            if not el in self.ddoi_config['keywords'].keys():
-                self.logger.error(f"Invalid script option encountered: {el}")
-                raise NotImplementedError(f"Script element does not exist: {el}")
-            
-            try:
+            self._add_event_item(el, sequence.as_dict(), instrument)
 
-                # Import the right translator module
-                if self.ddoi_config['keywords'][el]['translator'] == "INSTRUMENT":
-                    tm_name = self.ddoi_config['translator_import_names'][instrument]
-                elif self.ddoi_config['keywords'][el]['translator'] == "ACQUISITION":
-                    tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
-                elif self.ddoi_config['keywords'][el]['translator'] == "TELESCOPE":
-                    tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
+    def load_events_from_acquisition_and_target(self, acquisition, target):
+        """Takes an acquisition and target and breaks it down into executable events this queue
 
-                full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
+        Parameters
+        ----------
+        acquisition: dict
+            Acquisition component that should be decomposed function args 
+        target : dict 
+            Target that should be decomposed into function args
+        """
 
-                module = importlib.import_module(full_function_name)
+        instrument = acquisition['metadata']['instrument']
+        script_name = acquisition['metadata']['script']
+        script = self.get_script(instrument, script_name)
+        print(script)
+        args = { 'acquisition': acquisition, 'target': target}
+        for el in script:
+            self._add_event_item(el, args, instrument)
+    
+    def _add_event_item(self, el, args, instrument):
+        if not el in self.ddoi_config['keywords'].keys():
+            self.logger.error(f"Invalid script option encountered: {el}")
+            raise NotImplementedError(f"Script element does not exist: {el}")
+        
+        try:
+            func = self._get_translator_function(el, instrument)
+            #TODO: include lock boolean 
+            block = True 
+            event = EventItem(args=args,
+                                func=func, 
+                                func_name=el.lower(), 
+                                ddoi_config=self.ddoi_config,
+                                block=block)
+            self.put_one(event)
 
-                try:
-                    func = getattr(module, el.lower())
-                except AttributeError as e:
-                    self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
-                    raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
-                
-                #TODO: include lock boolean 
-                block = True 
-                event = EventItem(args=sequence.as_dict(),
-                                  func=func, 
-                                  func_name=el.lower(), 
-                                  ddoi_config=self.ddoi_config,
-                                  block=block)
-                self.put_one(event)
+        except ImportError as e:
+            self.logger.error(f"Error while importing!")
+            self.logger.error(e)
+            raise e
 
-            except ImportError as e:
-                self.logger.error(f"Error while importing!")
-                self.logger.error(e)
-                raise e
+    def _get_translator_function(self, el, instrument):
 
+        # Import the right translator module
+        if self.ddoi_config['keywords'][el]['translator'] == "INSTRUMENT":
+            tm_name = self.ddoi_config['translator_import_names'][instrument]
+        elif self.ddoi_config['keywords'][el]['translator'] == "ACQUISITION":
+            tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
+        elif self.ddoi_config['keywords'][el]['translator'] == "TELESCOPE":
+            tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
+
+        full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
+
+        module = importlib.import_module(full_function_name)
+
+        try:
+            func = getattr(module, el.lower())
+            return func
+        except AttributeError as e:
+            self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
+            raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
 #############
 ## Fix Me! ##
 #############
