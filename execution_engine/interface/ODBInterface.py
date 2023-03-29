@@ -50,21 +50,17 @@ class ODBInterface:
         
             raise RuntimeError("Failed to receive an OB from the database!")
     
-    def get_script(self, instrument, script_name, script_version=None):
+    def get_script(self, instrument, script_name):
         url = f"{self.api_url}/instrumentPackages/{instrument.upper()}/scripts"
         self.logger.debug(f"Getting script from {url}")
         res = self.session.get(url)
 
         if res.status_code == 200:
-            for script in res.json():
-                nameMatch = script["metadata"]["name"] == script_name
-                versionMatch = script["metadata"]["version"] == script_version
-                if nameMatch and versionMatch:
-                        return script["script"]
-                elif nameMatch and not versionMatch:
-                        return script["script"]
-                else:
-                    raise NotImplementedError(f"No script matching {script_name} version {script_version} found in the ODB")
+            script = next(x for x in res.json() if x['metadata']['name']==script_name), False)
+            if script:
+                return script["script"]
+            raise NotImplementedError(f"No script matching {script_name} found in the ODB")
+
         else:
             self.logger.error(f"Failed to get scripts from the ODB! Got status code {res.status_code}")
             # try:

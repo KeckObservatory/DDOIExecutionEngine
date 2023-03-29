@@ -35,7 +35,7 @@ class EventQueue(DDOIBaseQueue):
             p.start()
             self.logger.debug(f"Event Queue started worker_{i}")
 
-    def get_script(self, instrument, script_name, script_version):
+    def get_script(self, instrument, script_name):
         """Fetch a DDOI script for this sequence
 
         Parameters
@@ -44,7 +44,7 @@ class EventQueue(DDOIBaseQueue):
             Sequence that this function should find a script for
         """
         # Get the script        
-        script = self.ODB_interface.get_script(instrument, script_name, script_version)
+        script = self.ODB_interface.get_script(instrument, script_name)
         output = []
         for el in script:
             output.append(el[0])
@@ -72,9 +72,7 @@ class EventQueue(DDOIBaseQueue):
 
         instrument = sequence.sequence['metadata']['instrument']
         script_name = sequence.sequence['metadata']['script']
-        # script_version = sequence.sequence['metadata']['version'] #version not currently needed
-        script_version = None 
-        script = self.get_script(instrument, script_name, script_version)
+        script = self.get_script(instrument, script_name)
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
@@ -93,9 +91,7 @@ class EventQueue(DDOIBaseQueue):
 
         instrument = acquisition['metadata']['instrument']
         script_name = acquisition['metadata']['script']
-        # script_version = acquisition['metadata']['version'] # version not currently needed
-        script_version = None
-        script = self.get_script(instrument, script_name, script_version)
+        script = self.get_script(instrument, script_name)
         print(script)
         args = { 'acquisition': acquisition, 'target': target}
         for el in script:
