@@ -22,8 +22,10 @@ from logging import StreamHandler, FileHandler
 import pkg_resources
 import json
 import configparser
+import multiprocessing
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
+from execution_engine.core.EventSocketServer import PipeServer
 from execution_engine.core.Queues.ObservingQueue.ObservingQueue import ObservingQueue
 from execution_engine.core.Queues.SequenceQueue.SequenceQueue import SequenceQueue
 from execution_engine.core.Queues.EventQueue.EventQueue import EventQueue
@@ -74,6 +76,13 @@ class ExecutionEngine:
         self.ODBInterface = ODBInterface(self.cfg, self.logger)
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
 
+        self.server_connection, _internal_connection = multiprocessing.Pipe(duplex=True)
+
+        server_proc = multiprocessing.Process(target=self.start_event_server, args=(_internal_connection, logger))
+        logger.info("Starting event server process...")
+        server_proc.start()
+        logger.debug(f"Event server started with PID {server_proc.pid}")
+
 
     def _create_queues(self) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
         """Creates the three queues
@@ -83,11 +92,13 @@ class ExecutionEngine:
         Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]
             Observing Queue, Sequence Queue, Event Queue
         """
-        # observing_queue = DDOIBaseQueue(ObservingBlockItem)
-        # sequence_queue = DDOIBaseQueue(SequenceItem)
-        # event_queue = DDOIBaseQueue(EventItem)
+
         observing_queue = ObservingQueue(name="observing_queue", interface=self.ODBInterface, logger=self.logger)
         sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
         event_queue = EventQueue(name="event_queue", ddoi_cfg = self.ddoi_cfg, interface=self.ODBInterface, logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
+    
+    def start_event_server(self, connection, logger):
+        server = PipeServer(connection, logger)
+        server.start()
