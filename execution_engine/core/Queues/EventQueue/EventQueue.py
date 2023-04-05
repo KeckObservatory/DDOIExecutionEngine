@@ -7,7 +7,7 @@ from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
 # This variable dictates whether events are allowed to be dispatched. For
 # deployment, set this to True. Otherwise, leave it as False.
-enable_dispatching = False
+enable_dispatching = True
 
 class EventQueue(DDOIBaseQueue):
 
@@ -150,8 +150,8 @@ class EventQueue(DDOIBaseQueue):
         """Pull the top element of this queue and put it into the executing
         area, after checking for the appropriate flags
         """
-
-        isBlocked = not self.lock.acquire(block=False) # blocks
+        # isBlocked = not self.lock.locked()
+        isBlocked = not self.lock.acquire(blocking=False) # blocks
         self.lock.release() # need to release lock
         if isBlocked and not force:
             self.logger.error("Tried to fetch an event while blocked!")
@@ -161,7 +161,7 @@ class EventQueue(DDOIBaseQueue):
 
         if event.block:
             self.logger.debug(f"Event ID {event.id} acquiring blocking lock.")
-            self.lock.acquire(block=True)
+            self.lock.acquire(blocking=True)
             self.logger.debug(f"Event ID {event.id} acquired lock.")
         else: 
             if isBlocked: self.lock.release()
@@ -210,15 +210,16 @@ class EventQueue(DDOIBaseQueue):
             # Pull from the queue
             event = mqueue.get()
 
-            logger.info(f"{name} accepted event {event.id}")
+            logger.info(f"{name} accepted event {event['id']}")
 
             if event.get('kill', None):
                 logger.info(f"{name} exiting by request")
                 break
 
-            logger.info(f"Executing event {event.script_name}")
+            logger.info(f"Executing event {event['event_item'].script_name}")
+            logger.info(f"Translator is {str(event['event_item'].func)}")
             try:
-                event.func.execute(event.args)
+                event['event_item'].func.execute(event['event_item'].args)
                 if lock is not None:
                     logger.debug(f"{name} attempting to release the blocking lock")
                     try:
@@ -227,7 +228,7 @@ class EventQueue(DDOIBaseQueue):
                         logger.error(f"{name} attempted to release the blocking lock, but it was already unlocked!")
             except Exception as e:
                 logger.error(f"Exception while trying to execute {name}!")
-                logger.error(e)
+                logger.error(e.with_traceback())
                 return
             
 
