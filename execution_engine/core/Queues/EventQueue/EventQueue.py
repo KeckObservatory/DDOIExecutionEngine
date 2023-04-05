@@ -19,7 +19,6 @@ class EventQueue(DDOIBaseQueue):
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = ddoi_cfg
-        self.lock = multiprocessing.Lock()
 
         if not enable_dispatching:
             self.logger.warning("Set up event queue in simulate only mode")
@@ -27,13 +26,21 @@ class EventQueue(DDOIBaseQueue):
         
         # Event Dispatching Bookkeeping
         self.processes = []
-        self.multi_queue = multiprocessing.Queue()
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
+
+        self.manager = multiprocessing.Manager()
+        self.lock = self.manager.Lock()
+        self.multi_queue = self.manager.Queue()
+
         self.logger.info(f"Spawning {num_workers} event execution processes")
         for i in range(num_workers):
             p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}", self.logger))
             p.start()
             self.logger.debug(f"Event Queue started worker_{i}")
+
+    #######################
+    # Queue-related stuff #
+    #######################
 
     def get_script(self, instrument, script_name):
         """Fetch a DDOI script for this sequence
@@ -174,8 +181,25 @@ class EventQueue(DDOIBaseQueue):
             except ValueError as e:
                 self.logger.error(f"{event.script_name} attempted to release the blocking lock, but it was already unlocked!")
 
+    ###########################
+    # Event dispatching stuff #
+    ###########################
+
     @staticmethod
     def run(mqueue, name, logger, lock=None):
+        """Run method for event workers
+
+        Parameters
+        ----------
+        mqueue : mutliprocessing.Queue
+            Queue to pull events from
+        name : str
+            Name of this process, for logging purposes
+        logger : logging.Logger
+            Logger to write messages to
+        lock : multiprocessing.Lock, optional
+            Lock used to enable blocking/non-blocking functions, by default None
+        """
 
         while(True):
 
@@ -208,6 +232,18 @@ class EventQueue(DDOIBaseQueue):
             
 
     def kill_workers(self, block=True, nicely=True):
+        """Kills all workers in self.processes, with varying levels of severity
+
+        Parameters
+        ----------
+        block : bool, optional
+            If True, hang until all processes are dead. If False, return
+            immediately, by default True
+        nicely : bool, optional
+            If True, send a message to each process requesting that it exit when
+            possible . If False, forcibly kill each process, regardless of 
+            whether it is busy, by default True
+        """
         if nicely:
             self.logger.info(f"Requesting that {len(self.processes)} workers exit")
             for proc in self.processes:
