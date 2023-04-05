@@ -138,9 +138,6 @@ class EventQueue(DDOIBaseQueue):
         except AttributeError as e:
             self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
             raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
-#############
-## Fix Me! ##
-#############
 
     def dispatch_event(self, force=False):
         """Pull the top element of this queue and put it into the executing
