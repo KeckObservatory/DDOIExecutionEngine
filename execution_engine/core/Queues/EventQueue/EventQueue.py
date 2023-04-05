@@ -159,7 +159,7 @@ class EventQueue(DDOIBaseQueue):
         else: 
             if isBlocked: self.lock.release()
 
-        
+        self.logger.info(f"attempting to dispatch event {event.script_name}") 
         if enable_dispatching:
             self.logger.info(f"Submitting event {event.id} to the queue")
             self.multi_queue.put({
