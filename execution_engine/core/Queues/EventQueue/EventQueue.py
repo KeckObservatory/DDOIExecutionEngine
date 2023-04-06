@@ -29,7 +29,9 @@ class EventQueue(DDOIBaseQueue):
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
 
         self.manager = multiprocessing.Manager()
-        self.lock = self.manager.Lock()
+        self.logger.info(f"Multiprocessing manager started @ {self.manager.address}")
+        self.logger.info(f"Authkey: {multiprocessing.current_process().authkey}")
+        self.block_event = self.manager.Event()
         self.multi_queue = self.manager.Queue()
 
         self.logger.info(f"Spawning {num_workers} event execution processes")
@@ -111,8 +113,7 @@ class EventQueue(DDOIBaseQueue):
         
         try:
             func = self._get_translator_function(el, instrument)
-            #TODO: include lock boolean 
-            block = True 
+            block = True # TODO: This shouldn't always be blocking!
             event = EventItem(args=args,
                                 func=func, 
                                 func_name=el.lower(), 
@@ -150,9 +151,7 @@ class EventQueue(DDOIBaseQueue):
         """Pull the top element of this queue and put it into the executing
         area, after checking for the appropriate flags
         """
-        # isBlocked = not self.lock.locked()
-        isBlocked = not self.lock.acquire(blocking=False) # blocks
-        self.lock.release() # need to release lock
+        isBlocked = self.block_event.is_set()
         if isBlocked and not force:
             self.logger.error("Tried to fetch an event while blocked!")
             raise SystemError("Event Queue is blocked, but an event dispatch was requested")
@@ -160,11 +159,11 @@ class EventQueue(DDOIBaseQueue):
         event = self.get()
 
         if event.block:
-            self.logger.debug(f"Event ID {event.id} acquiring blocking lock.")
-            self.lock.acquire(blocking=True)
-            self.logger.debug(f"Event ID {event.id} acquired lock.")
-        else: 
-            if isBlocked: self.lock.release()
+            self.logger.debug(f"Event ID {event.id} setting blocked.")
+            if self.block_event.is_set():
+                raise RuntimeError("Race condition encountered! Another processes interupted me")
+            self.block_event.set()
+            self.logger.debug(f"Event ID {event.id} set blocked.")
 
         self.logger.info(f"attempting to dispatch event {event.script_name}") 
         if enable_dispatching:
@@ -172,21 +171,22 @@ class EventQueue(DDOIBaseQueue):
             self.multi_queue.put({
                 "id" : event.id,
                 "event_item" : event,
-                "lock" : self.lock
+                "block_event" : self.block_event
             })
         else:
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
-            try:
-                self.lock.release()
-            except ValueError as e:
-                self.logger.error(f"{event.script_name} attempted to release the blocking lock, but it was already unlocked!")
-
+            # We are in simulate mode, so blocking events will never release!
+            # We have to do it manually, after an arbitrary sleep
+            if event.block:
+                time.sleep(1)
+                self.block_event.clear()
+           
     ###########################
     # Event dispatching stuff #
     ###########################
 
     @staticmethod
-    def run(mqueue, name, logger, lock=None):
+    def run(mqueue, name, logger, block_event=None):
         """Run method for event workers
 
         Parameters
@@ -220,12 +220,14 @@ class EventQueue(DDOIBaseQueue):
             logger.info(f"Translator is {str(event['event_item'].func)}")
             try:
                 event['event_item'].func.execute(event['event_item'].args)
-                if lock is not None:
-                    logger.debug(f"{name} attempting to release the blocking lock")
-                    try:
-                        lock.release()
-                    except ValueError as e:
-                        logger.error(f"{name} attempted to release the blocking lock, but it was already unlocked!")
+                if event['event_item'].block:
+                    block_event.clear()
+                # if lock is not None:
+                #     logger.debug(f"{name} attempting to release the blocking lock")
+                #     try:
+                #         lock.release()
+                #     except ValueError as e:
+                #         logger.error(f"{name} attempted to release the blocking lock, but it was already unlocked!")
             except Exception as e:
                 logger.error(f"Exception while trying to execute {name}!")
                 logger.error(e.with_traceback())
