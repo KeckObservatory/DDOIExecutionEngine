@@ -113,7 +113,11 @@ class EventQueue(DDOIBaseQueue):
         
         try:
             func = self._get_translator_function(el, instrument)
-            block = True # TODO: This shouldn't always be blocking!
+            try:
+                block = self.ddoi_config['keywords'][el]['blocking']
+            except KeyError as e:
+                self.logger.warn(f"KeyError while trying to see if {el} is blocking! Setting block=True")
+                block=True
             event = EventItem(args=args,
                                 func=func, 
                                 func_name=el.lower(), 
