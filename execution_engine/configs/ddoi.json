@@ -38,11 +38,11 @@
         },
         "WAITFOR_ACQUIRE" : {
             "blocks" : true ,
-            "translator" : "ACQUISITION"
+            "translator" : "BUTTON_EVENT"
         },
         "WAITFOR_SLEW" : {
             "blocks" : true ,
-            "translator" : "TELESCOPE"
+            "translator" : "BUTTON_EVENT"
         }
     },
     "translator_import_names" : {
