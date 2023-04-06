@@ -221,7 +221,7 @@ class EventQueue(DDOIBaseQueue):
             try:
                 event['event_item'].func.execute(event['event_item'].args)
                 if event['event_item'].block:
-                    block_event.clear()
+                    event['block_event'].clear()
                 # if lock is not None:
                 #     logger.debug(f"{name} attempting to release the blocking lock")
                 #     try:
