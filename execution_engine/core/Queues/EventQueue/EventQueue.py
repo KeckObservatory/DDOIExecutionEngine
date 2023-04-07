@@ -15,7 +15,7 @@ class EventQueue(DDOIBaseQueue):
         item_type = EventItem
         super().__init__(item_type, logger=logger, name=name)
 
-        
+        # Interface for this queue to talk to the outside world
         self.ODB_interface = interface
         self.logger = logger
         self.ddoi_config = ddoi_cfg
@@ -25,13 +25,17 @@ class EventQueue(DDOIBaseQueue):
         
         
         # Event Dispatching Bookkeeping
-        self.processes = []
+        self.processes = [] # Used to kill processes if needed
         num_workers = int(self.ddoi_config['event_config']['num_processes'])
 
+        # a multiprocessing.Manager is used to keep events and this queue
+        # thread-safe. 
         self.manager = multiprocessing.Manager()
         self.logger.info(f"Multiprocessing manager started @ {self.manager.address}")
         self.logger.info(f"Authkey: {multiprocessing.current_process().authkey}")
+        # This Event is used to dictate when the Queue is blocked
         self.block_event = self.manager.Event()
+        # This Queue is used to distribute tasks out to worker processes
         self.multi_queue = self.manager.Queue()
 
         self.logger.info(f"Spawning {num_workers} event execution processes")
@@ -107,17 +111,45 @@ class EventQueue(DDOIBaseQueue):
             self._add_event_item(el, args, instrument)
     
     def _add_event_item(self, el, args, instrument):
+        """Takes a script element, arguments, and an instrument, creates an
+        EventItem with the appropriate values set, and adds it to this queue
+
+        Parameters
+        ----------
+        el : str
+            DDOI Script element
+        args : dict or dictlike
+            arguments to be passed into the translator function (usually an OB)
+        instrument : str
+            Name of the instrument to fetch a translator for
+
+        Raises
+        ------
+        NotImplementedError
+            Raised if there is the given script element does not match any
+            entries in the ddoi.json configuration file
+        ImportError
+            Raised if the translator module function cannot be imported
+        """
+
+        # Check if the script element passed in exists in the config
         if not el in self.ddoi_config['keywords'].keys():
             self.logger.error(f"Invalid script option encountered: {el}")
             raise NotImplementedError(f"Script element does not exist: {el}")
         
         try:
+            # Try to find the translator module function for this element and
+            # instrument
             func = self._get_translator_function(el, instrument)
+            
+            # See if this element is supposed to block execution flow
             try:
                 block = self.ddoi_config['keywords'][el]['blocking']
             except KeyError as e:
                 self.logger.warn(f"KeyError while trying to see if {el} is blocking! Setting block=True")
                 block=True
+            
+            # Create an event item, and insert it into this queue
             event = EventItem(args=args,
                                 func=func, 
                                 func_name=el.lower(), 
@@ -125,12 +157,33 @@ class EventQueue(DDOIBaseQueue):
                                 block=block)
             self.put_one(event)
 
+        # If the translator module function couldn't be imported, raise an error
         except ImportError as e:
             self.logger.error(f"Error while importing!")
             self.logger.error(e)
             raise e
 
     def _get_translator_function(self, el, instrument):
+        """Imports a translator module function for a given instrument
+
+        Parameters
+        ----------
+        el : str
+            DDOI Script element (e.g. acquire, waitfor_configure_science, etc)
+        instrument : str
+            Name of the instrument to import from, in capitals
+
+        Returns
+        -------
+        function
+            The imported translator module function
+
+        Raises
+        ------
+        NotImplementedError
+            Raised if the requested translator module function cannot be found
+            in the instrument module
+        """
 
         # Import the right translator module
         if self.ddoi_config['keywords'][el]['translator'] == "INSTRUMENT":
@@ -140,32 +193,51 @@ class EventQueue(DDOIBaseQueue):
         elif self.ddoi_config['keywords'][el]['translator'] == "TELESCOPE":
             tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
 
+        # Import only the function we want, from the `ddoi_script_functions`
+        # directory in the module
         full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
 
+        # Import the module
         module = importlib.import_module(full_function_name)
 
         try:
+            # Get the specific function requested
             func = getattr(module, el.lower())
             return func
         except AttributeError as e:
+            # If the requested function doesn't exist in the module, raise an error
             self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
             raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
 
     def dispatch_event(self, force=False):
         """Pull the top element of this queue and put it into the executing
         area, after checking for the appropriate flags
+
+        Parameters
+        ----------
+        force : bool, optional
+            If true, ignore any blocks in the event queue, by default False
+
+        Raises
+        ------
+        RuntimeError
+            Raised if the queue is blocked and force=False
         """
-        isBlocked = self.block_event.is_set()
-        if isBlocked and not force:
-            self.logger.error("Tried to fetch an event while blocked!")
-            raise SystemError("Event Queue is blocked, but an event dispatch was requested")
-        
+
+        if self.block_event.is_set() and not force:
+            # The queue is blocked, so we should reject this attempt
+            self.logger.error("Attempting to dispatch event while queue is blocked")
+            raise RuntimeError("Attempting to dispatch an event while blocked!")
+
+        # Get the first event in the queue
         event = self.get()
 
+        # If we
         if event.block:
             self.logger.debug(f"Event ID {event.id} setting blocked.")
-            if self.block_event.is_set():
-                raise RuntimeError("Race condition encountered! Another processes interupted me")
+            if self.block_event.is_set() and not force:
+                self.logger.error("Tried to fetch an event while blocked!")
+                raise RuntimeError("Event Queue is blocked, but an event dispatch was requested")
             self.block_event.set()
             self.logger.debug(f"Event ID {event.id} set blocked.")
 
@@ -190,7 +262,7 @@ class EventQueue(DDOIBaseQueue):
     ###########################
 
     @staticmethod
-    def run(mqueue, name, logger, block_event=None):
+    def run(mqueue, name, logger):
         """Run method for event workers
 
         Parameters
@@ -201,14 +273,13 @@ class EventQueue(DDOIBaseQueue):
             Name of this process, for logging purposes
         logger : logging.Logger
             Logger to write messages to
-        lock : multiprocessing.Lock, optional
-            Lock used to enable blocking/non-blocking functions, by default None
         """
 
+        # The main event loop
         while(True):
 
-            time.sleep(1)
             if mqueue.empty():
+                time.sleep(1)
                 continue
             
             # Pull from the queue
@@ -216,26 +287,25 @@ class EventQueue(DDOIBaseQueue):
 
             logger.info(f"{name} accepted event {event['id']}")
 
+            # If we got a kill message, end the event loop
             if event.get('kill', None):
                 logger.info(f"{name} exiting by request")
                 break
-
+            
             logger.info(f"Executing event {event['event_item'].script_name}")
             logger.info(f"Translator is {str(event['event_item'].func)}")
+            
+            # Try to execute the event
             try:
                 event['event_item'].func.execute(event['event_item'].args)
+                # If the event was blocking, release that block
                 if event['event_item'].block:
                     event['block_event'].clear()
-                # if lock is not None:
-                #     logger.debug(f"{name} attempting to release the blocking lock")
-                #     try:
-                #         lock.release()
-                #     except ValueError as e:
-                #         logger.error(f"{name} attempted to release the blocking lock, but it was already unlocked!")
+
             except Exception as e:
                 logger.error(f"Exception while trying to execute {name}!")
                 logger.error(e.with_traceback())
-                return
+                break
             
 
     def kill_workers(self, block=True, nicely=True):
