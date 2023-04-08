@@ -209,7 +209,7 @@ class EventQueue(DDOIBaseQueue):
             self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
             raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
 
-    def dispatch_event(self, force=False):
+    def dispatch_event(self, eventStr, force=False):
         """Pull the top element of this queue and put it into the executing
         area, after checking for the appropriate flags
 
@@ -231,6 +231,13 @@ class EventQueue(DDOIBaseQueue):
 
         # Get the first event in the queue
         event = self.get()
+
+        # Check that event matches what frontend submitted
+        submittedName, submittedID = eventStr.split('@')
+        idMatches = event.id == submittedID 
+        nameMatches = event.script_name ==submittedName
+        if not idMatches or not nameMatches:
+            raise RuntimeError('submitted event {eventStr} does not match {event.script_name}@{event.id}')
 
         # If we
         if event.block:
