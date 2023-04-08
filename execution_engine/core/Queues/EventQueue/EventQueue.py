@@ -186,11 +186,11 @@ class EventQueue(DDOIBaseQueue):
         """
 
         # Import the right translator module
-        if self.ddoi_config['keywords'][el]['translator'] == "INSTRUMENT":
+        if self.ddoi_config['keywords'][el.upper()]['translator'] == "INSTRUMENT":
             tm_name = self.ddoi_config['translator_import_names'][instrument]
-        elif self.ddoi_config['keywords'][el]['translator'] == "ACQUISITION":
+        elif self.ddoi_config['keywords'][el.upper()]['translator'] == "ACQUISITION":
             tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
-        elif self.ddoi_config['keywords'][el]['translator'] == "TELESCOPE":
+        elif self.ddoi_config['keywords'][el.upper()]['translator'] == "TELESCOPE":
             tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
 
         # Import only the function we want, from the `ddoi_script_functions`
