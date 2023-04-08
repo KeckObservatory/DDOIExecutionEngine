@@ -192,6 +192,8 @@ class EventQueue(DDOIBaseQueue):
             tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "TELESCOPE":
             tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
+        else: 
+            raise NotImplementedError(f"Failed to find {el} within the ddoi config file")
 
         # Import only the function we want, from the `ddoi_script_functions`
         # directory in the module
