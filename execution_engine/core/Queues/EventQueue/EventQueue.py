@@ -144,7 +144,7 @@ class EventQueue(DDOIBaseQueue):
             
             # See if this element is supposed to block execution flow
             try:
-                block = self.ddoi_config['keywords'][el]['blocking']
+                block = self.ddoi_config['keywords'][el.upper()]['blocking']
             except KeyError as e:
                 self.logger.warn(f"KeyError while trying to see if {el} is blocking! Setting block=True")
                 block=True
