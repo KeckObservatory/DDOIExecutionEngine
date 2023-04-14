@@ -192,6 +192,8 @@ class EventQueue(DDOIBaseQueue):
             tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "TELESCOPE":
             tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
+        elif self.ddoi_config['keywords'][el.upper()]['translator'] == "BUTTON_EVENT":
+            tm_name = self.ddoi_config['translator_import_names']["BUTTON_EVENT"]
         else: 
             self.logger.error(f"Failed to find {el.lower()} ddoi config file")
             raise NotImplementedError(f"Failed to find {el} within the ddoi config file")
