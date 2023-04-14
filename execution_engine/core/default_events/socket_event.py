@@ -4,7 +4,7 @@ import datetime
 import os
 
 
-class SocketEvent(TranslatorModuleFunction):
+class socket_event(TranslatorModuleFunction):
     """Waiting event. This event will wait until it recieves a kill message over
     a provided connection.
 
