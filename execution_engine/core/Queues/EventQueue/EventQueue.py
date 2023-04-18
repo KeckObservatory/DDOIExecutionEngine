@@ -190,26 +190,36 @@ class EventQueue(DDOIBaseQueue):
         """
 
         # Import the right translator module
+        is_default_event = False # Set to true if the function exists in the ExEn
         if self.ddoi_config['keywords'][el.upper()]['translator'] == "INSTRUMENT":
             tm_name = self.ddoi_config['translator_import_names'][instrument]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "ACQUISITION":
             tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "TELESCOPE":
             tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
+        elif self.ddoi_config['keywords'][el.upper()]['translator'] == "BUTTON_EVENT":
+            is_default_event = True
         else: 
-            self.logger.error(f"Failed to find {el.lower()} ddoi config file")
-            raise NotImplementedError(f"Failed to find {el} within the ddoi config file")
+            self.logger.error(f"Failed to find {el.lower()} ddoi config file, or the translator type is invalid")
+            raise NotImplementedError(f"Failed to find {el} within the ddoi config file, or the translator type is invalid")
 
         # Import only the function we want, from the `ddoi_script_functions`
         # directory in the module
-        full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
+        if is_default_event:
+            # Right now this only supports socket_event
+            full_function_name = f"execution_engine.core.default_events.socket_event"
+        else:
+            full_function_name = f"{tm_name}.ddoi_script_functions.{el.lower()}"
 
         # Import the module
         module = importlib.import_module(full_function_name)
 
         try:
             # Get the specific function requested
-            func = getattr(module, el.lower())
+            if is_default_event:
+                func = getattr(module, 'socket_event')
+            else:
+                func = getattr(module, el.lower())
             return func
         except AttributeError as e:
             # If the requested function doesn't exist in the module, raise an error
