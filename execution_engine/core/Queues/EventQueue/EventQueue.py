@@ -9,6 +9,10 @@ from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 # deployment, set this to True. Otherwise, leave it as False.
 enable_dispatching = True
 
+# This variable is used to bypass the multiprocessing queue and run 
+# events sequentially
+run_events_sequentially = True
+
 class EventQueue(DDOIBaseQueue):
 
     def __init__(self, logger=None, ddoi_cfg=None, interface=None, name=None) -> None:
@@ -253,12 +257,16 @@ class EventQueue(DDOIBaseQueue):
 
         self.logger.info(f"attempting to dispatch event {event.script_name}") 
         if enable_dispatching:
-            self.logger.info(f"Submitting event {event.id} to the queue")
-            self.multi_queue.put({
-                "id" : event.id,
-                "event_item" : event,
-                "block_event" : self.block_event
-            })
+            if not run_events_sequentially:
+                self.logger.info(f"Submitting event {event.id} to the queue")
+                self.multi_queue.put({
+                    "id" : event.id,
+                    "event_item" : event,
+                    "block_event" : self.block_event
+                })
+            else:
+                self.logger.info(f"executing event {event.id} sequentially")
+                event.func.execute(event.args)
         else:
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
             # We are in simulate mode, so blocking events will never release!
