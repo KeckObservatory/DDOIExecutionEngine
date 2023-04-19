@@ -43,10 +43,12 @@ class EventQueue(DDOIBaseQueue):
         self.multi_queue = self.manager.Queue()
 
         self.logger.info(f"Spawning {num_workers} event execution processes")
-        for i in range(num_workers):
-            p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}", self.logger))
-            p.start()
-            self.logger.debug(f"Event Queue started worker_{i}")
+
+        if not run_events_sequentially:
+            for i in range(num_workers):
+                p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}", self.logger))
+                p.start()
+                self.logger.debug(f"Event Queue started worker_{i}")
 
     #######################
     # Queue-related stuff #
@@ -275,8 +277,13 @@ class EventQueue(DDOIBaseQueue):
                     "block_event" : self.block_event
                 })
             else:
+                self.multi_queue.put({
+                    "id" : event.id,
+                    "event_item" : event,
+                    "block_event" : self.block_event
+                })
                 self.logger.info(f"executing event {event.id} sequentially")
-                event.func.execute(event.args)
+                self.run(self.multi_queue, f"worker_sequential", self.logger)
         else:
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
             # We are in simulate mode, so blocking events will never release!
