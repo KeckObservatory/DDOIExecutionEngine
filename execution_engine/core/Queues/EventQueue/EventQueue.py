@@ -11,7 +11,7 @@ enable_dispatching = True
 
 # This variable is used to bypass the multiprocessing queue and run 
 # events sequentially
-run_events_sequentially = True 
+run_events_sequentially = False 
 
 class EventQueue(DDOIBaseQueue):
 
