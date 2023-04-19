@@ -11,7 +11,7 @@ enable_dispatching = True
 
 # This variable is used to bypass the multiprocessing queue and run 
 # events sequentially
-run_events_sequentially = False 
+run_events_sequentially = True 
 
 class EventQueue(DDOIBaseQueue):
 
@@ -93,7 +93,7 @@ class EventQueue(DDOIBaseQueue):
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
-            self._add_event_item(el, {"sequence" : sequence.as_dict()}, instrument)
+            self._add_event_item(el, sequence.as_dict(), instrument)
 
     def load_events_from_acquisition_and_target(self, acquisition, target):
         """Takes an acquisition and target and breaks it down into executable events this queue
