@@ -309,6 +309,8 @@ class EventQueue(DDOIBaseQueue):
         while(True):
 
             if mqueue.empty():
+                logger.info('zzzz')
+                print(f'zzzz {name}')
                 time.sleep(1)
                 continue
             
