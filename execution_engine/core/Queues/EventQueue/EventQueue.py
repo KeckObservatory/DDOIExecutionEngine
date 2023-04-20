@@ -314,8 +314,8 @@ class EventQueue(DDOIBaseQueue):
             if mqueue.empty():
                 logger.info('zzzz log')
                 print(f'zzzz print {name}')
-                time.sleep(random.randint(2,7))
-                logger.info('AFTER SLEEP')
+                #time.sleep(random.randint(2,7))
+                #logger.info('AFTER SLEEP')
                 continue
             
             # Pull from the queue
