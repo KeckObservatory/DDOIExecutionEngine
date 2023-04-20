@@ -306,7 +306,6 @@ class EventQueue(DDOIBaseQueue):
         logger : logging.Logger
             Logger to write messages to
         """
-        logger = logging.getLogger("tyler")
 
         # The main event loop
         while(True):
