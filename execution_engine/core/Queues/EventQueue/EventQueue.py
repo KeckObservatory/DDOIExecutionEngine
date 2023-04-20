@@ -1,6 +1,7 @@
 import importlib
 import multiprocessing
 import time
+import random
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
@@ -309,9 +310,9 @@ class EventQueue(DDOIBaseQueue):
         while(True):
 
             if mqueue.empty():
-                logger.info('zzzz')
-                print(f'zzzz {name}')
-                time.sleep(1)
+                logger.info('zzzz log')
+                print(f'zzzz print {name}')
+                time.sleep(random.randint(2,7))
                 continue
             
             # Pull from the queue
