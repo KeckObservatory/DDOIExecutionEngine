@@ -1,6 +1,7 @@
 import importlib
 import multiprocessing
 import time
+import logging
 import random
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
@@ -305,6 +306,7 @@ class EventQueue(DDOIBaseQueue):
         logger : logging.Logger
             Logger to write messages to
         """
+        logger = logging.getLogger("tyler")
 
         # The main event loop
         while(True):
@@ -313,6 +315,7 @@ class EventQueue(DDOIBaseQueue):
                 logger.info('zzzz log')
                 print(f'zzzz print {name}')
                 time.sleep(random.randint(2,7))
+                logger.info('AFTER SLEEP')
                 continue
             
             # Pull from the queue
