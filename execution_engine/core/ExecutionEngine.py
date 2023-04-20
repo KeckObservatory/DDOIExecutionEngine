@@ -23,6 +23,7 @@ import pkg_resources
 import json
 import configparser
 import multiprocessing
+from MagiqInterface import MagiqInterface
 
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.EventSocketServer import PipeServer
@@ -75,6 +76,8 @@ class ExecutionEngine:
         self.logger.debug(f"Creating ODB Interface")
         self.ODBInterface = ODBInterface(self.cfg, self.logger)
         self.obs_q, self.seq_q, self.ev_q = self._create_queues()
+
+        self.magiq_interface = MagiqInterface(self.cfg)
 
         self.server_connection, _internal_connection = multiprocessing.Pipe(duplex=True)
 
