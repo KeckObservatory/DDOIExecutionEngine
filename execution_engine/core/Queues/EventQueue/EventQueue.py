@@ -277,13 +277,8 @@ class EventQueue(DDOIBaseQueue):
                     "block_event" : self.block_event
                 })
             else:
-                self.multi_queue.put({
-                    "id" : event.id,
-                    "event_item" : event,
-                    "block_event" : self.block_event
-                })
                 self.logger.info(f"executing event {event.id} sequentially")
-                self.run(self.multi_queue, f"worker_sequential", self.logger)
+                event.func.execute(event.args)
         else:
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
             # We are in simulate mode, so blocking events will never release!
@@ -342,7 +337,6 @@ class EventQueue(DDOIBaseQueue):
                 logger.error(e.with_traceback())
                 break
             
-
     def kill_workers(self, block=True, nicely=True):
         """Kills all workers in self.processes, with varying levels of severity
 
