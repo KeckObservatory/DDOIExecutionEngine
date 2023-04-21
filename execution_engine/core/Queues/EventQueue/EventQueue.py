@@ -3,7 +3,7 @@ import multiprocessing
 import time
 import logging
 import random
-
+from DDOILoggerClient import DDOILogger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
@@ -14,6 +14,20 @@ enable_dispatching = True
 # This variable is used to bypass the multiprocessing queue and run 
 # events sequentially
 run_events_sequentially = False 
+
+def create_logger(subsystem='UNKNOWN', author='na', progid='na', semid='na'):
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger()
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(formatter)
+    try:
+        zmq_log_handler = dl.ZMQHandler(subsystem, None, author, progid, semid)
+        logger.addHandler(zmq_log_handler)
+    except Exception as err:
+        print('zmq log handler failed. not going to add')
+    logger.setLevel(logging.INFO)
+    return logger
 
 class EventQueue(DDOIBaseQueue):
 
@@ -48,7 +62,7 @@ class EventQueue(DDOIBaseQueue):
 
         if not run_events_sequentially:
             for i in range(num_workers):
-                p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}", self.logger))
+                p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}"))
                 p.start()
                 self.logger.debug(f"Event Queue started worker_{i}")
 
@@ -94,12 +108,13 @@ class EventQueue(DDOIBaseQueue):
         instrument = sequence.sequence['metadata']['instrument']
         script_name = sequence.sequence['metadata']['script']
         script = self.get_script(instrument, script_name)
+        semid = sequence.ob['metadata']['semid']
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
-            self._add_event_item(el, sequence.as_dict(), instrument)
+            self._add_event_item(el, sequence.as_dict(), instrument, semid)
 
-    def load_events_from_acquisition_and_target(self, acquisition, target):
+    def load_events_from_acquisition_and_target(self, ob):
         """Takes an acquisition and target and breaks it down into executable events this queue
 
         Parameters
@@ -110,15 +125,15 @@ class EventQueue(DDOIBaseQueue):
             Target that should be decomposed into function args
         """
 
-        instrument = acquisition['metadata']['instrument']
-        script_name = acquisition['metadata']['script']
+        instrument = ob['acquisition']['metadata']['instrument']
+        script_name = ob['acquisition']['metadata']['script']
+        semid = ob['metadata']['semid']
         script = self.get_script(instrument, script_name)
         print(script)
-        args = { 'acquisition': acquisition, 'target': target}
         for el in script:
-            self._add_event_item(el, args, instrument)
+            self._add_event_item(el, ob, instrument, semid)
     
-    def _add_event_item(self, el, args, instrument):
+    def _add_event_item(self, el, args, instrument, semid):
         """Takes a script element, arguments, and an instrument, creates an
         EventItem with the appropriate values set, and adds it to this queue
 
@@ -148,7 +163,7 @@ class EventQueue(DDOIBaseQueue):
         try:
             # Try to find the translator module function for this element and
             # instrument
-            func = self._get_translator_function(el, instrument)
+            func, subsystem = self._get_translator_function_and_subsystem(el, instrument)
             
             # See if this element is supposed to block execution flow
             try:
@@ -158,7 +173,9 @@ class EventQueue(DDOIBaseQueue):
                 block=True
             
             # Create an event item, and insert it into this queue
-            event = EventItem(args=args,
+            event = EventItem(  args=args,
+                                subsystem=subsystem,
+                                semid=semid,
                                 func=func, 
                                 func_name=el.lower(), 
                                 ddoi_config=self.ddoi_config,
@@ -171,7 +188,7 @@ class EventQueue(DDOIBaseQueue):
             self.logger.error(e)
             raise e
 
-    def _get_translator_function(self, el, instrument):
+    def _get_translator_function_and_subsystem(self, el, instrument):
         """Imports a translator module function for a given instrument
 
         Parameters
@@ -197,12 +214,16 @@ class EventQueue(DDOIBaseQueue):
         is_default_event = False # Set to true if the function exists in the ExEn
         if self.ddoi_config['keywords'][el.upper()]['translator'] == "INSTRUMENT":
             tm_name = self.ddoi_config['translator_import_names'][instrument]
+            subsystem = self.ddoi_config['subsystems'][instrument]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "ACQUISITION":
             tm_name = self.ddoi_config['translator_import_names']["ACQUISITION"]
+            subsystem = self.ddoi_config['subsystems']["ACQUISITION"]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "TELESCOPE":
             tm_name = self.ddoi_config['translator_import_names']["TELESCOPE"]
+            subsystem = self.ddoi_config['subsystems']["TELESCOPE"]
         elif self.ddoi_config['keywords'][el.upper()]['translator'] == "BUTTON_EVENT":
             is_default_event = True
+            subsystem = "UNKNOWN"
         else: 
             self.logger.error(f"Failed to find {el.lower()} ddoi config file, or the translator type is invalid")
             raise NotImplementedError(f"Failed to find {el} within the ddoi config file, or the translator type is invalid")
@@ -224,7 +245,7 @@ class EventQueue(DDOIBaseQueue):
                 func = getattr(module, 'socket_event')
             else:
                 func = getattr(module, el.lower())
-            return func
+            return func, subsystem
         except AttributeError as e:
             # If the requested function doesn't exist in the module, raise an error
             self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
@@ -294,7 +315,7 @@ class EventQueue(DDOIBaseQueue):
     ###########################
 
     @staticmethod
-    def run(mqueue, name, logger):
+    def run(mqueue, name):
         """Run method for event workers
 
         Parameters
@@ -303,8 +324,6 @@ class EventQueue(DDOIBaseQueue):
             Queue to pull events from
         name : str
             Name of this process, for logging purposes
-        logger : logging.Logger
-            Logger to write messages to
         """
 
         # The main event loop
@@ -316,6 +335,9 @@ class EventQueue(DDOIBaseQueue):
             
             # Pull from the queue
             event = mqueue.get()
+            subsystem = event.subsystem
+            semid = event.semid
+            logger = create_logger(subsystem=subsystem, author=name, semid=semid)
 
             logger.info(f"{name} accepted event {event['id']}")
 

@@ -45,6 +45,13 @@
             "translator" : "BUTTON_EVENT"
         }
     },
+    "subsystems" : {
+        "KPF" : "KPF",
+        "SSC" : "SSC",
+        "TELESCOPE" : "TELESCOPE",
+        "ACQUISITION" : "MAGIQ",
+	    "BUTTON_EVENT": "EXECUTION_ENGINE"
+    },
     "translator_import_names" : {
         "KPF" : "kpf",
         "SSC" : "ssc",
