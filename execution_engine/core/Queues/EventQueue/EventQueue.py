@@ -15,14 +15,14 @@ enable_dispatching = True
 # events sequentially
 run_events_sequentially = False 
 
-def create_logger(subsystem='UNKNOWN', author='na', progid='na', semid='na'):
+def create_logger(subsystem='UNKNOWN', author='na', progid='na', sem_id='na'):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger()
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
     try:
-        zmq_log_handler = dl.ZMQHandler(subsystem, None, author, progid, semid)
+        zmq_log_handler = dl.ZMQHandler(subsystem, None, author, progid, sem_id)
         logger.addHandler(zmq_log_handler)
     except Exception as err:
         print('zmq log handler failed. not going to add')
@@ -108,11 +108,11 @@ class EventQueue(DDOIBaseQueue):
         instrument = sequence.sequence['metadata']['instrument']
         script_name = sequence.sequence['metadata']['script']
         script = self.get_script(instrument, script_name)
-        semid = sequence.ob['metadata']['semid']
+        sem_id = sequence.ob['metadata']['sem_id']
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
-            self._add_event_item(el, sequence.as_dict(), instrument, semid)
+            self._add_event_item(el, sequence.as_dict(), instrument, sem_id)
 
     def load_events_from_acquisition_and_target(self, ob):
         """Takes an acquisition and target and breaks it down into executable events this queue
@@ -127,13 +127,13 @@ class EventQueue(DDOIBaseQueue):
 
         instrument = ob['acquisition']['metadata']['instrument']
         script_name = ob['acquisition']['metadata']['script']
-        semid = ob['metadata']['semid']
+        sem_id = ob['metadata']['sem_id']
         script = self.get_script(instrument, script_name)
         print(script)
         for el in script:
-            self._add_event_item(el, ob, instrument, semid)
+            self._add_event_item(el, ob, instrument, sem_id)
     
-    def _add_event_item(self, el, args, instrument, semid):
+    def _add_event_item(self, el, args, instrument, sem_id):
         """Takes a script element, arguments, and an instrument, creates an
         EventItem with the appropriate values set, and adds it to this queue
 
@@ -175,7 +175,7 @@ class EventQueue(DDOIBaseQueue):
             # Create an event item, and insert it into this queue
             event = EventItem(  args=args,
                                 subsystem=subsystem,
-                                semid=semid,
+                                sem_id=sem_id,
                                 func=func, 
                                 func_name=el.lower(), 
                                 ddoi_config=self.ddoi_config,
@@ -336,8 +336,8 @@ class EventQueue(DDOIBaseQueue):
             # Pull from the queue
             event = mqueue.get()
             subsystem = event.subsystem
-            semid = event.semid
-            logger = create_logger(subsystem=subsystem, author=name, semid=semid)
+            sem_id = event.sem_id
+            logger = create_logger(subsystem=subsystem, author=name, sem_id=sem_id)
 
             logger.info(f"{name} accepted event {event['id']}")
 
