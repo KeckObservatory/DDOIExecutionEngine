@@ -300,8 +300,12 @@ class EventQueue(DDOIBaseQueue):
                     "block_event" : self.block_event
                 })
             else:
+                subsystem = event.subsystem
+                sem_id = event.sem_id
+                logger = create_logger(subsystem=subsystem, author='seq-worker', sem_id=sem_id)
+                logger.info(f'created logger for subsystem {subsystem}')
                 self.logger.info(f"executing event {event.id} sequentially")
-                event.func.execute(event.args)
+                event.func.execute(event.args, logger)
         else:
             self.logger.info(f"Queue in simulate only mode. Would have sent {event.id} for dispatching")
             # We are in simulate mode, so blocking events will never release!
