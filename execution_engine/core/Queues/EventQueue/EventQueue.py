@@ -17,7 +17,7 @@ run_events_sequentially = True
 
 def create_logger(subsystem='UNKNOWN', author='na', progid='na', sem_id='na'):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger()
+    logger = logging.getLogger(subsystem)
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
