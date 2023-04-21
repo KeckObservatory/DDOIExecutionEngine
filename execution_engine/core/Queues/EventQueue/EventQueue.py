@@ -335,8 +335,8 @@ class EventQueue(DDOIBaseQueue):
             
             # Pull from the queue
             event = mqueue.get()
-            subsystem = event.subsystem
-            sem_id = event.sem_id
+            subsystem = event['event_item'].subsystem
+            sem_id = event['event_item'].sem_id
             logger = create_logger(subsystem=subsystem, author=name, sem_id=sem_id)
 
             logger.info(f"{name} accepted event {event['id']}")
