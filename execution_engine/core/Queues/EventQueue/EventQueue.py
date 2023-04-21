@@ -338,6 +338,7 @@ class EventQueue(DDOIBaseQueue):
             subsystem = event['event_item'].subsystem
             sem_id = event['event_item'].sem_id
             logger = create_logger(subsystem=subsystem, author=name, sem_id=sem_id)
+            logger.info(f'created logger for subsystem {subsystem}')
 
             logger.info(f"{name} accepted event {event['id']}")
 
@@ -351,7 +352,7 @@ class EventQueue(DDOIBaseQueue):
             
             # Try to execute the event
             try:
-                event['event_item'].func.execute(event['event_item'].args)
+                event['event_item'].func.execute(event['event_item'].args, logger)
                 # If the event was blocking, release that block
                 if event['event_item'].block:
                     event['block_event'].clear()
