@@ -23,8 +23,8 @@ import pkg_resources
 import json
 import configparser
 import multiprocessing
-from MagiqInterface import MagiqInterface
 
+from execution_engine.core.MagiqInterface import MagiqInterface
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.EventSocketServer import PipeServer
 from execution_engine.core.Queues.ObservingQueue.ObservingQueue import ObservingQueue
