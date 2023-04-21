@@ -13,7 +13,7 @@ enable_dispatching = True
 
 # This variable is used to bypass the multiprocessing queue and run 
 # events sequentially
-run_events_sequentially = False 
+run_events_sequentially = True 
 
 def create_logger(subsystem='UNKNOWN', author='na', progid='na', sem_id='na'):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
