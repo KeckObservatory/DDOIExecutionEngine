@@ -108,7 +108,7 @@ class EventQueue(DDOIBaseQueue):
         instrument = sequence.sequence['metadata']['instrument']
         script_name = sequence.sequence['metadata']['script']
         script = self.get_script(instrument, script_name)
-        sem_id = sequence.ob['metadata']['sem_id']
+        sem_id = sequence.OB['metadata']['sem_id']
         print(script)
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
