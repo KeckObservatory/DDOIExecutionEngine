@@ -127,8 +127,9 @@ class DDOIBaseQueue():
         # Save the original length
         original_len = len(self)
 
-        # Clear the queue
+        # Clear the queue and boneyard
         self.queue.clear()
+        self.boneyard = list()
 
         # Add the new contents
         for i in new_contents:
