@@ -109,10 +109,10 @@ class EventQueue(DDOIBaseQueue):
         script_name = sequence.sequence['metadata']['script']
         script = self.get_script(instrument, script_name)
         sem_id = sequence.OB['metadata']['sem_id']
-        print(script)
+        event_type = 'sequence'
         instrument = sequence.sequence['metadata']['instrument']
         for el in script:
-            self._add_event_item(el, sequence.as_dict(), instrument, sem_id)
+            self._add_event_item(el, sequence.as_dict(), instrument, sem_id, event_type)
 
     def load_events_from_acquisition_and_target(self, ob):
         """Takes an acquisition and target and breaks it down into executable events this queue
@@ -129,11 +129,11 @@ class EventQueue(DDOIBaseQueue):
         script_name = ob['acquisition']['metadata']['script']
         sem_id = ob['metadata']['sem_id']
         script = self.get_script(instrument, script_name)
-        print(script)
+        event_type = 'acquisitioin'
         for el in script:
-            self._add_event_item(el, ob, instrument, sem_id)
+            self._add_event_item(el, ob, instrument, sem_id, event_type)
     
-    def _add_event_item(self, el, args, instrument, sem_id):
+    def _add_event_item(self, el, args, instrument, sem_id, event_type):
         """Takes a script element, arguments, and an instrument, creates an
         EventItem with the appropriate values set, and adds it to this queue
 
@@ -145,6 +145,10 @@ class EventQueue(DDOIBaseQueue):
             arguments to be passed into the translator function (usually an OB)
         instrument : str
             Name of the instrument to fetch a translator for
+        sem_id: str
+            Name of the semester id 
+        eventType: str
+            Either 'acquisition' or 'sequence' 
 
         Raises
         ------
@@ -176,6 +180,7 @@ class EventQueue(DDOIBaseQueue):
             event = EventItem(  args=args,
                                 subsystem=subsystem,
                                 sem_id=sem_id,
+                                event_type=event_type,
                                 func=func, 
                                 func_name=el.lower(), 
                                 ddoi_config=self.ddoi_config,
@@ -251,12 +256,14 @@ class EventQueue(DDOIBaseQueue):
             self.logger.error(f"Failed to find {el.lower()} within the {full_function_name} module")
             raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
 
-    def dispatch_event(self, eventStr, force=False):
+    def dispatch_event(self, eventDict, force=False):
         """Pull the top element of this queue and put it into the executing
         area, after checking for the appropriate flags
 
         Parameters
         ----------
+        eventDict : dict
+            Event dictionary type.
         force : bool, optional
             If true, ignore any blocks in the event queue, by default False
 
@@ -275,9 +282,9 @@ class EventQueue(DDOIBaseQueue):
         event = self.get()
 
         # Check that event matches what frontend submitted
-        submittedName, submittedID = eventStr.split('@')
+        submittedName, submittedID = eventDict['script_name'], eventDict['id']
         idMatches = event.id == submittedID 
-        nameMatches = event.script_name ==submittedName
+        nameMatches = event.script_name == submittedName
         if not idMatches or not nameMatches:
             raise RuntimeError('submitted event {eventStr} does not match {event.script_name}@{event.id}')
 
