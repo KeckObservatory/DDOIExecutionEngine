@@ -129,7 +129,7 @@ class EventQueue(DDOIBaseQueue):
         script_name = ob['acquisition']['metadata']['script']
         sem_id = ob['metadata']['sem_id']
         script = self.get_script(instrument, script_name)
-        event_type = 'acquisitioin'
+        event_type = 'acquisition'
         for el in script:
             self._add_event_item(el, ob, instrument, sem_id, event_type)
     
