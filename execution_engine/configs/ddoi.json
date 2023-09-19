@@ -8,6 +8,10 @@
             "blocks" : false,
             "translator" : "TELESCOPE"
         },
+        "CONFIGURE_ACQUISITION" : {
+            "blocks" : false,
+            "translator" : "INSTRUMENT"
+        },
         "CONFIGURE_FOR_ACQUISITION" : {
             "blocks" : false,
             "translator" : "INSTRUMENT"
@@ -48,6 +52,7 @@
     "subsystems" : {
         "KPF" : "KPF",
         "SSC" : "SSC",
+        "NIRES" : "NIRES",
         "TELESCOPE" : "TELESCOPE",
         "ACQUISITION" : "MAGIQ",
 	    "BUTTON_EVENT": "EXECUTION_ENGINE"
@@ -55,6 +60,7 @@
     "translator_import_names" : {
         "KPF" : "kpf",
         "SSC" : "ssc",
+        "NIRES" : "nires",
         "TELESCOPE" : "telescopetranslator",
         "ACQUISITION" : "acquisitiontranslator",
 	"BUTTON_EVENT": "execution_engine.default_events"
