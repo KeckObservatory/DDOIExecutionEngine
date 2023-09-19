@@ -66,3 +66,10 @@ class MagiqInterface():
         response = requests.get(url)
         if not response.status_code == 200:
             raise Exception("check magiq server")
+
+    def select_target_in_magiq(self, target, idx):
+        url = f'{self.urlbase}/selectTarget?'
+        name = target.get('target_info_name', '') + f'-{idx}'
+        url = f'{url}targetName={name}'
+        logging.info(f'Selecting target {url}')
+        requests.get(url)
