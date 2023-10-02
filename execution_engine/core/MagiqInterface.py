@@ -40,14 +40,14 @@ class MagiqInterface():
             rowStr += 'wrap=' + str(wrap) + ' ' if isinstance(wrap, bool) and raOffset else ""
         return rowStr
 
-    def convert_obs_to_targetlist(self, obs):
+    def convert_obs_to_targetlist(self, obs, logger):
 
         targetListStr = ""
         for idx, ob in enumerate(obs):
             target = ob.get('target', False)
             acquisition = ob.get('acquisition', False)
             if not target or not acquisition:
-                logging.debug('ob has either no target or acquisition. not going to add')
+                logger.debug('ob has either no target or acquisition. not going to add')
                 continue
             row = self.convert_target_to_targetlist_row(target, acquisition, idx) 
             targetListStr += row + '\n'
@@ -55,7 +55,7 @@ class MagiqInterface():
 
     def add_target_list_to_magiq(self, obs, logger):
         url = self.urlbase + '/setTargetlist'
-        targetList = self.convert_obs_to_targetlist(obs)
+        targetList = self.convert_obs_to_targetlist(obs, logger)
         data = {'targetlist': targetList}
         logger.info(f'Setting target list of {len(obs)} targets via: {url}')
         logger.info(f'setting target list {targetList}')
