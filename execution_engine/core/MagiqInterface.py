@@ -22,11 +22,12 @@ class MagiqInterface():
         ra = tparams['target_coord_ra'].replace(':', ' ') + " "
         dec = tparams['target_coord_dec'].replace(':', ' ') + " "
         mags = tparams.get('target_magnitude', False)
-        magnitude = str(mags[0]['target_magnitude']) + " " if mags else False
+        magnitude = str(mags[0]['target_info_mag']) + " " if mags else False
+        band = mags[0].get('target_info_band', "").lower() 
         epoch = str(tparams['target_coord_epoch']) + " "
         rowStr = uname + ra + dec + epoch
         if magnitude:
-            rotStr += 'vmag=' + magnitude
+            rotStr += f'{band}mag=' + magnitude
 
         if aparams:
             raOffset = aparams.get('tcs_coord_raoff', False)
