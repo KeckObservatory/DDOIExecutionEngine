@@ -21,8 +21,8 @@ class MagiqInterface():
             uname = (name + postfix).ljust(17)
         ra = tparams['target_coord_ra'].replace(':', ' ') + " "
         dec = tparams['target_coord_dec'].replace(':', ' ') + " "
-        mags = tparams.get('target_info_mag', False)
-        magnitude = str(mags[0]['target_info_mag']) + " " if mags else False
+        mags = tparams.get('target_magnitude', False)
+        magnitude = str(mags[0]['target_magnitude']) + " " if mags else False
         epoch = str(tparams['target_coord_epoch']) + " "
         rowStr = uname + ra + dec + epoch
         if magnitude:
