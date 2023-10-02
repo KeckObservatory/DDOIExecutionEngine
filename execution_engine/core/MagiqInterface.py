@@ -83,6 +83,7 @@ class MagiqInterface():
         parameters = target.get('parameters')
         name = parameters.get('target_info_name', '')
         uname = self.create_magiq_ui_name(name, idx)
+        uname = uname.rstrip(' ')
         url = f'{url}target={uname}'
         logger.info(f'Selecting target {url}')
         response = requests.get(url)
