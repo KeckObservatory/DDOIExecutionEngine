@@ -73,7 +73,8 @@ class MagiqInterface():
 
     def select_target_in_magiq(self, target, idx, logger):
         url = f'{self.urlbase}/selectTarget?'
-        name = target.get('target_info_name', '') + f'-{idx}'
+        parameters = target.get('parameters')
+        name = parameters.get('target_info_name', '') + f'-{idx}'
         url = f'{url}targetName={name}'
         logger.info(f'Selecting target {url}')
         response = requests.get(url)
