@@ -27,7 +27,7 @@ class MagiqInterface():
         epoch = str(tparams['target_coord_epoch']) + " "
         rowStr = uname + ra + dec + epoch
         if magnitude:
-            rotStr += f'{band}mag=' + magnitude
+            rowStr += f'{band}mag=' + magnitude
 
         if aparams:
             raOffset = aparams.get('tcs_coord_raoff', False)
