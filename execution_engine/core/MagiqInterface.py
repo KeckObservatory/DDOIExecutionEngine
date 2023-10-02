@@ -60,16 +60,19 @@ class MagiqInterface():
         logging.info(f'Setting target list of {len(obs)} targets via: {url}')
         response = requests.post(url, data=data)
         logging.info(f'response: status code: {response.status_code}')
+        return response
 
     def check_if_connected_to_magiq_server(self):
         url = self.urlbase + '/status'
         response = requests.get(url)
         if not response.status_code == 200:
             raise Exception("check magiq server")
+        return response
 
     def select_target_in_magiq(self, target, idx):
         url = f'{self.urlbase}/selectTarget?'
         name = target.get('target_info_name', '') + f'-{idx}'
         url = f'{url}targetName={name}'
         logging.info(f'Selecting target {url}')
-        requests.get(url)
+        response = requests.get(url)
+        return response
