@@ -9,16 +9,21 @@ class MagiqInterface():
         self.urlbase = f'http://{server}:{port}'
 
     @staticmethod
-    def convert_target_to_targetlist_row(target, acquisition, idx):
-        tparams = target.get('parameters')
-        aparams = acquisition.get('parameters', False)
+    def create_magiq_ui_name(name, idx):
         postfix = f'-{idx}'
-        name = tparams.get('target_info_name') 
         rem = 16 - len(name) - len(postfix)
         if rem < 0: 
             uname = name[0:rem] + postfix + ' '
         else:
             uname = (name + postfix).ljust(17)
+        return uname
+
+    def convert_target_to_targetlist_row(self, target, acquisition, idx):
+        tparams = target.get('parameters')
+        aparams = acquisition.get('parameters', False)
+
+        name = tparams.get('target_info_name') 
+        uname = self.create_magiq_ui_name(name, idx)
         ra = tparams['target_coord_ra'].replace(':', ' ') + " "
         dec = tparams['target_coord_dec'].replace(':', ' ') + " "
         mags = tparams.get('target_magnitude', False)
@@ -36,9 +41,10 @@ class MagiqInterface():
             rotMode = aparams.get('rot_cfg_mode', False)
 
             rowStr += 'raOffset=' + str(raOffset) + ' ' if isinstance(raOffset, bool) and raOffset else ""
-            rowStr += 'decOffset=' + str(decOffset) + ' ' if isinstance(decOffset, bool) and raOffset else ""
-            rowStr += 'rotmode=' + str(rotMode) + ' ' if isinstance(rotMode, bool) and raOffset else ""
-            rowStr += 'wrap=' + str(wrap) + ' ' if isinstance(wrap, bool) and raOffset else ""
+            rowStr += 'decOffset=' + str(decOffset) + ' ' if isinstance(decOffset, bool) and decOffset else ""
+            rowStr += 'rotmode=' + str(rotMode) + ' ' if isinstance(rotMode, bool) and rotMode else ""
+            rowStr += 'wrap=' + str(wrap) + ' ' if isinstance(wrap, bool) and wrap else ""
+            rowStr += 'target=' + uname + ' ' if uname else ""
         return rowStr
 
     def convert_obs_to_targetlist(self, obs, logger):
@@ -74,8 +80,9 @@ class MagiqInterface():
     def select_target_in_magiq(self, target, idx, logger):
         url = f'{self.urlbase}/selectTarget?'
         parameters = target.get('parameters')
-        name = parameters.get('target_info_name', '') + f'-{idx}'
-        url = f'{url}targetName={name}'
+        name = parameters.get('target_info_name', '')
+        uname = self.create_magiq_ui_name(name, idx)
+        url = f'{url}target={uname}'
         logger.info(f'Selecting target {url}')
         response = requests.get(url)
         return response
