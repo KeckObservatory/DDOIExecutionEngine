@@ -45,6 +45,7 @@ class MagiqInterface():
             rowStr += 'rotmode=' + str(rotMode) + ' ' if isinstance(rotMode, bool) and rotMode else ""
             rowStr += 'wrap=' + str(wrap) + ' ' if isinstance(wrap, bool) and wrap else ""
             rowStr += 'target=' + uname + ' ' if uname else ""
+        rowStr = rowStr.rstrip(' ')
         return rowStr
 
     def convert_obs_to_targetlist(self, obs, logger):
