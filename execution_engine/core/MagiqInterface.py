@@ -53,13 +53,14 @@ class MagiqInterface():
             targetListStr += row + '\n'
         return targetListStr
 
-    def add_target_list_to_magiq(self, obs):
+    def add_target_list_to_magiq(self, obs, logger):
         url = self.urlbase + '/setTargetlist'
         targetList = self.convert_obs_to_targetlist(obs)
         data = {'targetlist': targetList}
-        logging.info(f'Setting target list of {len(obs)} targets via: {url}')
+        logger.info(f'Setting target list of {len(obs)} targets via: {url}')
+        logger.info(f'setting target list {targetList}')
         response = requests.post(url, data=data)
-        logging.info(f'response: status code: {response.status_code}')
+        logger.info(f'response: status code: {response.status_code}')
         return response
 
     def check_if_connected_to_magiq_server(self):
@@ -69,10 +70,10 @@ class MagiqInterface():
             raise Exception("check magiq server")
         return response
 
-    def select_target_in_magiq(self, target, idx):
+    def select_target_in_magiq(self, target, idx, logger):
         url = f'{self.urlbase}/selectTarget?'
         name = target.get('target_info_name', '') + f'-{idx}'
         url = f'{url}targetName={name}'
-        logging.info(f'Selecting target {url}')
+        logger.info(f'Selecting target {url}')
         response = requests.get(url)
         return response
