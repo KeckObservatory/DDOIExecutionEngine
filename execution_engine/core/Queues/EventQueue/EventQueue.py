@@ -85,7 +85,7 @@ class EventQueue(DDOIBaseQueue):
             output.append(el[0])
         return output
 
-    def load_events_from_sequence(self, sequence):
+    def load_events_from_sequence(self, sequence, ob):
         """Takes a sequence and breaks it down into executable events this queue
         
         This requires:
@@ -105,14 +105,14 @@ class EventQueue(DDOIBaseQueue):
             Script that should be used to parse the sequence
         """
 
-        instrument = sequence.sequence['metadata']['instrument']
-        script_name = sequence.sequence['metadata']['script']
+        instrument = sequence['metadata']['instrument']
+        script_name = sequence['metadata']['script']
         script = self.get_script(instrument, script_name)
-        sem_id = sequence.OB['metadata']['sem_id']
+        sem_id = ob['metadata']['sem_id']
         event_type = 'sequence'
-        instrument = sequence.sequence['metadata']['instrument']
+        instrument = sequence['metadata']['instrument']
         for el in script:
-            self._add_event_item(el, sequence.as_dict(), instrument, sem_id, event_type)
+            self._add_event_item(el, {'sequence': sequence, 'OB': ob} , instrument, sem_id, event_type)
 
     def load_events_from_acquisition_and_target(self, ob):
         """Takes an acquisition and target and breaks it down into executable events this queue
