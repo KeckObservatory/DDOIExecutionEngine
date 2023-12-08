@@ -290,8 +290,10 @@ class EventQueue(DDOIBaseQueue):
 
         #bookeeping event queue
         events.pop(idx)
+        boneyard = self.boneyard
         self.set_queue(events)
-        self.boneyard.append(event)
+        boneyard.append(event)
+        self.boneyard = boneyard
 
         # If we
         if event.block:
