@@ -373,9 +373,8 @@ class EventQueue(DDOIBaseQueue):
                 if event['event_item'].block:
                     event['block_event'].clear()
 
-            except Exception as e:
+            except Exception as err:
                 logger.error(f"Exception while trying to execute {name}!")
-                logger.error(e.with_traceback())
                 break
             
     def kill_workers(self, block=True, nicely=True):
