@@ -280,11 +280,11 @@ class EventQueue(DDOIBaseQueue):
 
         # Get the first event in the queue
         # event = self.get() # first event in the queue
-        events = self.get_queue_as_list()
+        events = [evt for evt in list(self.queue)]
         submittedName, submittedID = eventDict['script_name'], eventDict['id']
         # Check that event matches what frontend submitted
-        event, idx = next(((e, idx) for idx, e in enumerate(events) if e['id'] == submittedID), False)
-        nameMatches = event['script_name'] == submittedName
+        event, idx = next(((evt, idx) for idx, evt in enumerate(events) if evt.id == submittedID), False)
+        nameMatches = event.script_name == submittedName
         if not event or not nameMatches:
             raise RuntimeError('submitted event {eventStr} does not match {event.script_name}@{event.id}')
 
