@@ -257,7 +257,7 @@ class EventQueue(DDOIBaseQueue):
             raise NotImplementedError(f"Failed to find {el} within the {full_function_name} module")
 
     def dispatch_event(self, eventDict, force=False):
-        """Pull the top element of this queue and put it into the executing
+        """Pull the selected element of this queue and put it into the executing
         area, after checking for the appropriate flags
 
         Parameters
@@ -279,14 +279,20 @@ class EventQueue(DDOIBaseQueue):
             raise RuntimeError("Attempting to dispatch an event while blocked!")
 
         # Get the first event in the queue
-        event = self.get()
-
-        # Check that event matches what frontend submitted
+        # event = self.get() # first event in the queue
+        events = self.get_queue_as_list()
         submittedName, submittedID = eventDict['script_name'], eventDict['id']
+        # Check that event matches what frontend submitted
+        event, idx = next(((e, idx) for e, idx in enumerate(events) if e.id == submittedID), False)
         idMatches = event.id == submittedID 
         nameMatches = event.script_name == submittedName
         if not idMatches or not nameMatches:
             raise RuntimeError('submitted event {eventStr} does not match {event.script_name}@{event.id}')
+
+        #bookeeping event queue
+        events.pop(idx)
+        self.set_queue(events)
+        self.boneyard.append(event)
 
         # If we
         if event.block:
