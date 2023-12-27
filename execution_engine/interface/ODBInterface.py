@@ -35,7 +35,7 @@ class ODBInterface:
     def update_OB(self, ob):
         url = f"{self.api_url}/obsBlocks"
         self.logger.debug(f"Updating OB from {url}")
-        res = self.session.put(url=url, data=ob, params={"ob_id" : ob['_id']})
+        res = self.session.put(url=url, json=ob, params={"ob_id" : ob['_id']})
         if res.status_code == 200:
             self.logger.info(f"sent updated OB: {ob['_id']} to DB")
             data = res.json()
