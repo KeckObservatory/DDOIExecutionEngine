@@ -34,14 +34,14 @@ class ODBInterface:
 
     def update_OB(self, ob):
         url = f"{self.api_url}/obsBlocks"
-        self.logger.debug(f"Getting OB from {url}")
-        res = self.session.put(url=url, data=ob, params={"ob_id" : id})
+        self.logger.debug(f"Updating OB from {url}")
+        res = self.session.put(url=url, data=ob, params={"ob_id" : ob['_id']})
         if res.status_code == 200:
-            self.logger.info(f"sent updated OB: {id} to DB")
+            self.logger.info(f"sent updated OB: {ob['_id']} to DB")
             data = res.json()
             return data
         else:
-            self.logger.error(f"Failed to get OB from the ODB! Got status code {res.status_code}")
+            self.logger.error(f"Failed to update OB. Got status code {res.status_code}")
 
     def get_OB_from_id(self, id):
         url = f"{self.api_url}/obsBlocks"
