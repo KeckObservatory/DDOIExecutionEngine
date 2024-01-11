@@ -69,9 +69,9 @@ class ExecutionEngine:
         # Handle DDOI config
         pkg = "execution_engine"
         cfgpath = "configs/ddoi.json"
-        self.ddoi_cfg_log_path = pkg_resources.resource_filename(pkg, cfgpath)
-        ddoicfg = open(self.ddoi_cfg_log_path)
-        self.ddoi_cfg = json.load(ddoicfg)
+        self.ddoi_config_log_path = pkg_resources.resource_filename(pkg, cfgpath)
+        ddoi_config = open(self.ddoi_config_log_path)
+        self.ddoi_config = json.load(ddoi_config)
 
         self.logger.debug(f"Creating ODB Interface")
         self.ODBInterface = ODBInterface(self.cfg, self.logger)
@@ -98,7 +98,7 @@ class ExecutionEngine:
 
         observing_queue = ObservingQueue(name="observing_queue", interface=self.ODBInterface, logger=self.logger)
         sequence_queue = SequenceQueue(name="sequence_queue", logger=self.logger)
-        event_queue = EventQueue(name="event_queue", ddoi_cfg = self.ddoi_cfg, interface=self.ODBInterface, logger=self.logger)
+        event_queue = EventQueue(name="event_queue", ddoi_config = self.ddoi_config, interface=self.ODBInterface, logger=self.logger)
 
         return observing_queue, sequence_queue, event_queue
     
