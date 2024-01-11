@@ -6,26 +6,28 @@ import random
 from DDOILoggerClient import DDOILogger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
+import json
 
-# This variable dictates whether events are allowed to be dispatched. For
-# deployment, set this to True. Otherwise, leave it as False.
-enable_dispatching = True
+with open('../../../configs/ddoi.json') as f:
+    ddoi_config = json.load(f)
 
-# This variable is used to bypass the multiprocessing queue and run 
-# events sequentially
-run_events_sequentially = False 
-
-def create_logger(subsystem='UNKNOWN', author='na', progid='na', sem_id='na'):
+def create_logger(configLocation, subsystem, author, progid, semid, loggername):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(subsystem)
+    logger = logging.getLogger()
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
+    logger.addHandler(ch)
     try:
-        zmq_log_handler = dl.ZMQHandler(subsystem, None, author, progid, sem_id)
+        kwargs = {'subsystem':subsystem, 
+                  'author':author, 
+                  'progid':progid, 
+                  'semid':semid, 
+                  'loggername': loggername}
+        zmq_log_handler = dl.ZMQHandler(configLocation, local=False, **kwargs)
         logger.addHandler(zmq_log_handler)
     except Exception as err:
-        print('zmq log handler failed. not going to add')
+        print(f'zmq log handler failed. not going to add. {err}')
     logger.setLevel(logging.INFO)
     return logger
 
@@ -305,8 +307,8 @@ class EventQueue(DDOIBaseQueue):
             self.logger.debug(f"Event ID {event.id} set blocked.")
 
         self.logger.info(f"attempting to dispatch event {event.script_name}") 
-        if enable_dispatching:
-            if not run_events_sequentially:
+        if ddoi_config['enable_dispatching']:
+            if not ddoi_config['run_events_sequentially']:
                 self.logger.info(f"Submitting event {event.id} to the queue")
                 self.multi_queue.put({
                     "id" : event.id,
@@ -355,7 +357,7 @@ class EventQueue(DDOIBaseQueue):
             event = mqueue.get()
             subsystem = event['event_item'].subsystem
             sem_id = event['event_item'].sem_id
-            logger = create_logger(subsystem=subsystem, author=name, sem_id=sem_id)
+            logger = create_logger(subsystem=subsystem, author=name, sem_id=sem_id, loggername='ddoi')
             logger.info(f'created logger for subsystem {subsystem}')
 
             logger.info(f"{name} accepted event {event['id']}")

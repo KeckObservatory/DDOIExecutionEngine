@@ -66,6 +66,8 @@
 	"BUTTON_EVENT": "execution_engine.default_events"
     },
     "event_config" : {
-        "num_processes" : 2
+        "num_processes" : 2,
+        "enable_dispatching": true,
+        "run_events_sequentially": true
     }
 }
