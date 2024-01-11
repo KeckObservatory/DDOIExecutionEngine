@@ -6,12 +6,13 @@ import random
 from DDOILoggerClient import DDOILogger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
+import os
 import json
 
-with open('../../../configs/ddoi.json') as f:
+with open(f'{os.path.getdir(__file__)}../../../configs/ddoi.json') as f:
     ddoi_config = json.load(f)
 
-def create_logger(configLocation, subsystem, author, progid, semid, loggername):
+def create_logger(subsystem, author, progid, semid, loggername, configLocation=None):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger()
     ch = logging.StreamHandler()
