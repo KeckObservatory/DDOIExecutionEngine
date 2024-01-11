@@ -38,7 +38,7 @@ class EventQueue(DDOIBaseQueue):
         self.logger = logger
         self.ddoi_config = ddoi_config
 
-        if not self.ddoi_config['enable_dispatching']:
+        if not self.ddoi_config['event_config']['enable_dispatching']:
             self.logger.warning("Set up event queue in simulate only mode")
         
         
@@ -303,8 +303,8 @@ class EventQueue(DDOIBaseQueue):
             self.logger.debug(f"Event ID {event.id} set blocked.")
 
         self.logger.info(f"attempting to dispatch event {event.script_name}") 
-        if self.ddoi_config['enable_dispatching']:
-            if not self.ddoi_config['run_events_sequentially']:
+        if self.ddoi_config['event_config']['enable_dispatching']:
+            if not self.ddoi_config['event_config']['run_events_sequentially']:
                 self.logger.info(f"Submitting event {event.id} to the queue")
                 self.multi_queue.put({
                     "id" : event.id,
