@@ -9,7 +9,7 @@ from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 import os
 import json
 
-with open(f'{os.path.dirname(__file__)}../../../configs/ddoi.json') as f:
+with open(f'{os.path.dirname(__file__)}/../../../configs/ddoi.json') as f:
     ddoi_config = json.load(f)
 
 def create_logger(subsystem, author, progid, semid, loggername, configLocation=None):
