@@ -58,7 +58,7 @@ class EventQueue(DDOIBaseQueue):
 
         self.logger.info(f"Spawning {num_workers} event execution processes")
 
-        if not run_events_sequentially:
+        if not self.ddoi_config['event_config']['run_events_sequentially']:
             for i in range(num_workers):
                 p = multiprocessing.Process(target=self.run, args=(self.multi_queue, f"worker_{i}"))
                 p.start()
