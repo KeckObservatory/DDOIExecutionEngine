@@ -6,11 +6,6 @@ import random
 from DDOILoggerClient import DDOILogger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
-import os
-import json
-
-with open(f'{os.path.dirname(__file__)}/../../../configs/ddoi.json') as f:
-    ddoi_config = json.load(f)
 
 def create_logger(subsystem, author, progid, semid, loggername, configLocation=None):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -34,16 +29,16 @@ def create_logger(subsystem, author, progid, semid, loggername, configLocation=N
 
 class EventQueue(DDOIBaseQueue):
 
-    def __init__(self, logger=None, ddoi_cfg=None, interface=None, name=None) -> None:
+    def __init__(self, logger=None, ddoi_config=None, interface=None, name=None) -> None:
         item_type = EventItem
         super().__init__(item_type, logger=logger, name=name)
 
         # Interface for this queue to talk to the outside world
         self.ODB_interface = interface
         self.logger = logger
-        self.ddoi_config = ddoi_cfg
+        self.ddoi_config = ddoi_config
 
-        if not enable_dispatching:
+        if not self.ddoi_config['enable_dispatching']:
             self.logger.warning("Set up event queue in simulate only mode")
         
         
@@ -308,8 +303,8 @@ class EventQueue(DDOIBaseQueue):
             self.logger.debug(f"Event ID {event.id} set blocked.")
 
         self.logger.info(f"attempting to dispatch event {event.script_name}") 
-        if ddoi_config['enable_dispatching']:
-            if not ddoi_config['run_events_sequentially']:
+        if self.ddoi_config['enable_dispatching']:
+            if not self.ddoi_config['run_events_sequentially']:
                 self.logger.info(f"Submitting event {event.id} to the queue")
                 self.multi_queue.put({
                     "id" : event.id,
