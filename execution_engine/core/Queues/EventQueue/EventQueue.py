@@ -314,7 +314,7 @@ class EventQueue(DDOIBaseQueue):
             else:
                 subsystem = event.subsystem
                 sem_id = event.sem_id
-                logger = create_logger(subsystem=subsystem, author='seq-worker', sem_id=sem_id)
+                logger = create_logger(subsystem=subsystem, author='seq-worker', semid=sem_id)
                 logger.info(f'created logger for subsystem {subsystem}')
                 self.logger.info(f"executing event {event.id} sequentially")
                 event.func.execute(event.args, logger)
