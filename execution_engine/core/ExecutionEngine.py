@@ -81,10 +81,10 @@ class ExecutionEngine:
 
         self.server_connection, _internal_connection = multiprocessing.Pipe(duplex=True)
 
-        server_proc = multiprocessing.Process(target=self.start_event_server, args=(_internal_connection, logger))
-        logger.info("Starting event server process...")
-        server_proc.start()
-        logger.debug(f"Event server started with PID {server_proc.pid}")
+        # server_proc = multiprocessing.Process(target=self.start_event_server, args=(_internal_connection, logger))
+        # logger.info("Starting event server process...")
+        # server_proc.start()
+        # logger.debug(f"Event server started with PID {server_proc.pid}")
 
 
     def _create_queues(self) -> Tuple[DDOIBaseQueue, DDOIBaseQueue, DDOIBaseQueue]:
