@@ -3,7 +3,7 @@ import multiprocessing
 import time
 import logging
 import random
-from DDOILoggerClient import DDOILogger as dl
+from LoggerClient import Logger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
