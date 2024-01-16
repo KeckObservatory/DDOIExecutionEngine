@@ -4,9 +4,7 @@ Could just as easily use Pipes, or RPC, or any other IPC standard, but sockets
 are nice since the code is easily understood by anyone with web socket experience
 """
 
-from multiprocessing import Pipe
-import socket
-from _thread import start_new_thread
+from time import sleep
 
 class PipeServer:
 
@@ -23,7 +21,7 @@ class PipeServer:
     def start(self):
         # Start the event loop
         while True:
-            
+            sleep(.1) 
             # what messages need to be sent out
             to_send = []
             
