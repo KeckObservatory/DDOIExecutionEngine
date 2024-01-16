@@ -7,7 +7,7 @@ from DDOILoggerClient import DDOILogger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
 
-def create_logger(subsystem, author, progid, semid, loggername, configLocation=None):
+def create_logger(subsystem, author, semid, loggername, configLocation=None):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger()
     ch = logging.StreamHandler()
@@ -17,7 +17,6 @@ def create_logger(subsystem, author, progid, semid, loggername, configLocation=N
     try:
         kwargs = {'subsystem':subsystem, 
                   'author':author, 
-                  'progid':progid, 
                   'semid':semid, 
                   'loggername': loggername}
         zmq_log_handler = dl.ZMQHandler(configLocation, local=False, **kwargs)
@@ -314,7 +313,11 @@ class EventQueue(DDOIBaseQueue):
             else:
                 subsystem = event.subsystem
                 sem_id = event.sem_id
-                logger = create_logger(subsystem=subsystem, author='seq-worker', semid=sem_id)
+                logger = create_logger(subsystem=subsystem,
+                                       author='seq-worker',
+                                       semid=sem_id,
+                                       loggername='ddoi'
+                                       )
                 logger.info(f'created logger for subsystem {subsystem}')
                 self.logger.info(f"executing event {event.id} sequentially")
                 event.func.execute(event.args, logger)
@@ -353,7 +356,10 @@ class EventQueue(DDOIBaseQueue):
             event = mqueue.get()
             subsystem = event['event_item'].subsystem
             sem_id = event['event_item'].sem_id
-            logger = create_logger(subsystem=subsystem, author=name, sem_id=sem_id, loggername='ddoi')
+            logger = create_logger(subsystem=subsystem,
+                                   author=name, 
+                                   semid=sem_id, 
+                                   loggername='ddoi')
             logger.info(f'created logger for subsystem {subsystem}')
 
             logger.info(f"{name} accepted event {event['id']}")
