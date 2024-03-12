@@ -81,6 +81,38 @@ class EventQueue(DDOIBaseQueue):
         for el in script:
             output.append(el[0])
         return output
+    
+    def update_event_list(self, ob, eventList):
+        updatedEvents = []
+        for event in eventList:
+            if not event.instrument == ob['metadata']['instrument']:
+                raise ValueError(f"Event instrument {event.instrument} does not match OB instrument {ob['metadata']['instrument']}")
+            if event.type == 'sequence':
+                assert event.args['OB']['_id'] == ob['_id'], f"Event OB ID {event.args['OB']['_id']} does not match OB ID {ob['_id']}"
+                sequenceNumber = event.args['sequence']['metadata']['sequence_number']
+                newSequence = next((x for x in ob['sequences'] if x['_id'] == sequenceNumber), False)
+                if not newSequence: 
+                    self.logger.warning('warning sequence not found in ob')
+                event.args = {'sequence': newSequence, 'OB': ob}
+                event.args = {'sequence': event.args['sequence'], 'OB': ob}
+            elif event.type == 'acquisition':
+                event.args = ob
+            updatedEvents.append(event)
+        return updatedEvents
+
+    def refresh_event_args(self, ob):
+        """Refreshes the arguments for all events in this queue
+
+        Parameters
+        ----------
+        ob : dict
+            The OB that is being refreshed
+        """
+        updatedQueue = self.update_event_list(ob, list(self.queue))
+        self.set_queue(updatedQueue)
+        self.boneyard = self.update_event_list(ob, self.boneyard)
+
+
 
     def load_events_from_sequence(self, sequence, ob):
         """Takes a sequence and breaks it down into executable events this queue
