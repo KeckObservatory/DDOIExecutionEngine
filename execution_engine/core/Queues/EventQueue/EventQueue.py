@@ -3,6 +3,7 @@ import multiprocessing
 import time
 import logging
 import random
+import os
 from LoggerClient import Logger as dl
 from execution_engine.core.Queues.BaseQueue import DDOIBaseQueue
 from execution_engine.core.Queues.EventQueue.EventItem import EventItem
@@ -18,6 +19,7 @@ def create_logger(subsystem, author, semid, loggername, configLocation=None):
         kwargs = {'subsystem':subsystem, 
                   'author':author, 
                   'semid':semid, 
+                  'server': os.uname().nodename,
                   'loggername': loggername}
         zmq_log_handler = dl.ZMQHandler(configLocation, local=False, **kwargs)
         logger.addHandler(zmq_log_handler)
