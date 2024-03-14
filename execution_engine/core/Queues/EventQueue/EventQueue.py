@@ -87,7 +87,7 @@ class EventQueue(DDOIBaseQueue):
     def update_event_list(self, ob, eventList):
         updatedEvents = []
         for event in eventList:
-            if event.type == 'sequence':
+            if event.event_type == 'sequence':
                 if event.args['OB']['_id'] == ob['_id']:
                     self.logger.warning(f"Event OB ID {event.args['OB']['_id']} does not match OB ID {ob['_id']}")
                     continue
@@ -100,7 +100,7 @@ class EventQueue(DDOIBaseQueue):
                     self.logger.warning('warning sequence not found in ob')
                 event.args = {'sequence': newSequence, 'OB': ob}
                 event.args = {'sequence': event.args['sequence'], 'OB': ob}
-            elif event.type == 'acquisition':
+            elif event.event_type == 'acquisition':
                 if event.args['_id'] == ob['_id']:
                     self.logger.warning(f"Event OB ID {event.args['_id']} does not match OB ID {ob['_id']}")
                     continue
