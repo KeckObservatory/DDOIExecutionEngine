@@ -87,10 +87,13 @@ class EventQueue(DDOIBaseQueue):
     def update_event_list(self, ob, eventList):
         updatedEvents = []
         for event in eventList:
-            if not event.instrument == ob['metadata']['instrument']:
-                raise ValueError(f"Event instrument {event.instrument} does not match OB instrument {ob['metadata']['instrument']}")
             if event.type == 'sequence':
-                assert event.args['OB']['_id'] == ob['_id'], f"Event OB ID {event.args['OB']['_id']} does not match OB ID {ob['_id']}"
+                if event.args['OB']['_id'] == ob['_id']:
+                    self.logger.warning(f"Event OB ID {event.args['OB']['_id']} does not match OB ID {ob['_id']}")
+                    continue
+                if event.args['OB']['metadata']['instrument'] == ob['metadata']['instrument']: 
+                    self.logger.warning(f"Event instrument {event.args['OB']['metadata']['instrument']} does not match OB instrument {ob['metadata']['instrument']}")
+                    continue
                 sequenceNumber = event.args['sequence']['metadata']['sequence_number']
                 newSequence = next((x for x in ob['sequences'] if x['_id'] == sequenceNumber), False)
                 if not newSequence: 
@@ -98,6 +101,12 @@ class EventQueue(DDOIBaseQueue):
                 event.args = {'sequence': newSequence, 'OB': ob}
                 event.args = {'sequence': event.args['sequence'], 'OB': ob}
             elif event.type == 'acquisition':
+                if event.args['_id'] == ob['_id']:
+                    self.logger.warning(f"Event OB ID {event.args['_id']} does not match OB ID {ob['_id']}")
+                    continue
+                if event.args['metadata']['instrument'] == ob['metadata']['instrument']: 
+                    self.logger.warning(f"Event instrument {event.args['metadata']['instrument']} does not match OB instrument {ob['metadata']['instrument']}")
+                    continue
                 event.args = ob
             updatedEvents.append(event)
         return updatedEvents
