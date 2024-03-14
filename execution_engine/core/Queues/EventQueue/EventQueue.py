@@ -97,7 +97,7 @@ class EventQueue(DDOIBaseQueue):
                     updatedEvents.append(event)
                     continue
                 sequenceNumber = event.args['sequence']['metadata']['sequence_number']
-                newSequence = next((x for x in ob['observations'] if x['_id'] == sequenceNumber), False)
+                newSequence = next((x for x in ob['observations'] if x['metadata']['sequence_number'] == sequenceNumber), False)
                 if not newSequence: 
                     self.logger.warning('warning sequence not found in ob')
                 event.args = {'sequence': newSequence, 'OB': ob}
