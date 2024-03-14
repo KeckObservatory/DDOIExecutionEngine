@@ -88,11 +88,11 @@ class EventQueue(DDOIBaseQueue):
         updatedEvents = []
         for event in eventList:
             if event.event_type == 'sequence':
-                if event.args['OB']['_id'] == ob['_id']:
+                if not event.args['OB']['_id'] == ob['_id']:
                     self.logger.warning(f"Event OB ID {event.args['OB']['_id']} does not match OB ID {ob['_id']}")
                     updatedEvents.append(event)
                     continue
-                if event.args['OB']['metadata']['instrument'] == ob['metadata']['instrument']: 
+                if not event.args['OB']['metadata']['instrument'] == ob['metadata']['instrument']: 
                     self.logger.warning(f"Event instrument {event.args['OB']['metadata']['instrument']} does not match OB instrument {ob['metadata']['instrument']}")
                     updatedEvents.append(event)
                     continue
